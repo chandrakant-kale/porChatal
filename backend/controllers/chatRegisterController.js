@@ -23,11 +23,13 @@ const chatRegister = async (req, res) => {
             })
         }
 
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
         const result = await pool.query(`
-            INSERT INTO users(name, password)
+            INSERT INTO users(username, password_hash)
             VALUES ($1, $2)
-            RETURNING id, name`,
-            [newName, newPassword]
+            RETURNING id, username`,
+            [newName, hashedPassword]
         );
 
         console.log(result.rows[0]);
@@ -58,13 +60,13 @@ const chatRegister = async (req, res) => {
         if (error.code === "23505") {
             return res.status(409).json({
                 success: false,
-                message: "Company with this email already exists"
+                message: "User with this Name already exists"
             });
         }
 
         res.status(500).json({
             success: false,
-            message: "database error"
+            message: "Database error"
         })
     }
 }
