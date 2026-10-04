@@ -14,7 +14,6 @@ const chatRegister = async (req, res) => {
         }
 
         const newUserName = username.trim();
-        const newPassword = password.trim();
 
         if (newPassword.length < 8) {
             return res.status(400).json({
@@ -23,7 +22,7 @@ const chatRegister = async (req, res) => {
             })
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const result = await pool.query(`
             INSERT INTO users(username, password_hash)
