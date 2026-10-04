@@ -9,7 +9,7 @@ const chatRegister = async (req, res) => {
         if (!username?.trim() || !password?.trim()) {
             return res.status(400).json({
                 success: false,
-                message: "Name and Password must required"
+                message:  "Username and password are required"
             });
         }
 
@@ -18,7 +18,7 @@ const chatRegister = async (req, res) => {
         if (newPassword.length < 8) {
             return res.status(400).json({
                 success: false,
-                message: "Password must be at lest 8 characters"
+                message: "Password must be at least 8 characters"
             })
         }
 
