@@ -4,16 +4,16 @@ const bcrypt = require("bcrypt");
 
 const chatRegister = async (req, res) => {
     try {
-        const { name, password } = req.body;
+        const { username, password } = req.body;
 
-        if (!name?.trim() || !password?.trim()) {
+        if (!username?.trim() || !password?.trim()) {
             return res.status(400).json({
                 success: false,
                 message: "Name and Password must required"
             });
         }
 
-        const newName = name.trim();
+        const newUserName = username.trim();
         const newPassword = password.trim();
 
         if (newPassword.length < 8) {
@@ -29,10 +29,8 @@ const chatRegister = async (req, res) => {
             INSERT INTO users(username, password_hash)
             VALUES ($1, $2)
             RETURNING id, username`,
-            [newName, hashedPassword]
+            [newUserName, hashedPassword]
         );
-
-        console.log(result.rows[0]);
 
         const ID = result.rows[0].id;
 
