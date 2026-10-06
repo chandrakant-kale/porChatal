@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import MidnightBlueLeaves from "../assets/Midnight Blue Leaves.png";
+import { Link } from "react-router-dom";
 
 const API_URL = "http://localhost:5000";
 
@@ -257,7 +258,8 @@ export default function Register() {
           PAGE
       ===================================================== */}
 
-      <main className="min-h-screen bg-[#07090d] text-white selection:bg-[#f47b20] selection:text-black lg:h-screen lg:overflow-hidden">
+      <main className="min-h-screen bg-[#07090d] text-white selection:bg-[#f47b20] selection:text-black lg:h-screen
+       lg:overflow-hidden">
 
         <div className="grid min-h-screen lg:h-screen lg:grid-cols-[1.08fr_0.92fr]">
 
@@ -268,7 +270,7 @@ export default function Register() {
           <section
             className="relative hidden overflow-hidden bg-[#05080d] lg:block"
             style={{
-              backgroundImage:`url(${MidnightBlueLeaves})`,
+              backgroundImage: `url(${MidnightBlueLeaves})`,
               backgroundSize: "cover",
               backgroundPosition: "center center",
             }}
@@ -281,34 +283,17 @@ export default function Register() {
             <div className="absolute inset-0 bg-black/25" />
 
             {/* =================================================
-                NAVY OVERLAY
-            ================================================= */}
-
-            <div className="absolute inset-0 bg-[#071526]/35 mix-blend-multiply" />
-
-            {/* =================================================
                 LEFT TEXT GRADIENT
             ================================================= */}
 
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-[#07101b]/65" />
-
-            {/* =================================================
-                BOTTOM DARKNESS
-            ================================================= */}
-
-            <div className="absolute inset-0 bg-gradient-to-t from-[#05080d]/85 via-transparent to-[#05080d]/20" />
-
-            {/* =================================================
-                SUBTLE RIGHT EDGE
-            ================================================= */}
-
-            <div className="absolute right-0 top-0 h-full w-[100px] bg-gradient-to-l from-[#0d1624]/45 to-transparent" />
-
+            <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/35 to-[#07101b]/65" />
+            
             {/* =================================================
                 ORANGE BRAND LINE
             ================================================= */}
 
-            <div className="absolute left-0 top-0 h-full w-[3px] bg-[#f47b20]" />
+            <div className="absolute left-0 top-0 h-full w-0.75 bg-[#f47b20]" />
+
 
             {/* =================================================
                 CONTENT
@@ -335,7 +320,7 @@ export default function Register() {
                   <div>
 
                     <p className="por-display text-[17px] font-extrabold tracking-[-0.04em]">
-                      PorChatal
+                      Por<span className="text-orange-500">Chat</span>al
                     </p>
 
                     <p className="por-mono mt-0.5 text-[7px] uppercase tracking-[0.28em] text-white/35">
@@ -356,13 +341,13 @@ export default function Register() {
                   HERO
               ------------------------------------------------- */}
 
-              <div className="my-auto max-w-[650px]">
+              <div className="my-auto max-w-162.5">
 
                 <p className="por-mono mb-5 text-[9px] uppercase tracking-[0.32em] text-[#f47b20]">
                   A different kind of chat
                 </p>
 
-                <h1 className="por-display max-w-[650px] text-[clamp(3.3rem,5.3vw,6rem)] font-extrabold leading-[0.9] tracking-[-0.075em]">
+                <h1 className="por-display max-w-162.5 text-[clamp(3.3rem,5.3vw,6rem)] font-extrabold leading-[0.9] tracking-[-0.075em]">
 
                   Some things
                   <br />
@@ -378,7 +363,7 @@ export default function Register() {
 
                 <div className="mt-7 h-px w-16 bg-[#f47b20]" />
 
-                <p className="por-display mt-6 max-w-[480px] text-[14px] leading-7 text-white/55">
+                <p className="por-display mt-6 max-w-120 text-[14px] leading-7 text-white/55">
                   A conversation doesn't always need to
                   become a permanent record.
                   <br />
@@ -396,7 +381,7 @@ export default function Register() {
 
               <div className="flex items-end justify-between">
 
-                <div className="max-w-[350px]">
+                <div className="max-w-87.5">
 
                   <p className="por-display text-[12px] leading-5 text-white/40">
                     Private conversations should feel
@@ -431,11 +416,11 @@ export default function Register() {
                 SUBTLE BACKGROUND
             ================================================= */}
 
-            <div className="pointer-events-none absolute right-[-180px] top-[-180px] h-[420px] w-[420px] rounded-full border
-             border-white/[0.025]" />
+            <div className="pointer-events-none absolute -right-45 -top-45 h-105 w-105 rounded-full border
+             border-white/2.5" />
 
-            <div className="pointer-events-none absolute -bottom-50 left-[-170px] h-[420px] w-[420px] rounded-full border 
-            border-white/[0.02]" />
+            <div className="pointer-events-none absolute -bottom-50 -left-42.5 h-105 w-105 rounded-full border 
+            border-white/2" />
 
             {/* Small orange corner */}
             <div className="pointer-events-none absolute right-0 top-0 h-20 w-20 border-b border-l border-[#f47b20]/20" />
@@ -450,9 +435,9 @@ export default function Register() {
                   FORM HEADER
               ------------------------------------------------- */}
 
-              <div className="mb-7">
+              <div className="mb-5">
 
-                <div className="mb-4 flex items-center gap-2">
+                <div className="mb-2 flex items-center gap-2">
 
                   <span className="h-1.5 w-1.5 bg-[#f47b20]" />
 
@@ -473,7 +458,7 @@ export default function Register() {
 
                 </h2>
 
-                <p className="por-display mt-4 max-w-87.5 text-[11px] leading-5 text-white/35">
+                <p className="por-display mt-3 max-w-87.5 text-[11px] leading-5 text-white/35">
                   Choose a username and password.
                   That's all you need to start a
                   private conversation.
@@ -487,7 +472,7 @@ export default function Register() {
 
               <form
                 onSubmit={handleSubmit}
-                className="space-y-4"
+                className="space-y-3"
               >
 
                 {/* -------------------------------------------------
@@ -498,7 +483,7 @@ export default function Register() {
 
                   <label
                     htmlFor="username"
-                    className="por-mono block text-[8px] uppercase tracking-[0.22em] text-white/35"
+                    className="por-mono block text-[10px] uppercase tracking-[0.22em] text-white/35"
                   >
                     Username
                   </label>
@@ -513,7 +498,7 @@ export default function Register() {
                     }
                     placeholder="choose_a_username"
                     className="por-input h-13 w-full rounded-none border border-white/10 bg-[#09111d] px-4 font-mono
-                     text-xs text-white outline-none placeholder:text-white/15 focus:border-[#f47b20]/60"
+                     text-xs text-white outline-none placeholder:text-white/15 focus:border-[#f47b20]/60 focus:bg-[#050c15]"
                   />
 
                 </div>
@@ -528,18 +513,17 @@ export default function Register() {
 
                     <label
                       htmlFor="password"
-                      className="por-mono text-[8px] uppercase tracking-[0.22em] text-white/35"
+                      className="por-mono text-[10px] uppercase tracking-[0.22em] text-white/35"
                     >
                       Password
                     </label>
 
                     {password && (
                       <span
-                        className={`por-mono text-[7px] uppercase tracking-[0.15em] ${
-                          passwordStrength >= 3
-                            ? "text-[#91a77e]"
-                            : "text-[#f47b20]"
-                        }`}
+                        className={`por-mono text-[7px] uppercase tracking-[0.15em] ${passwordStrength >= 3
+                          ? "text-[#91a77e]"
+                          : "text-[#f47b20]"
+                          }`}
                       >
                         {strengthLabel}
                       </span>
@@ -563,7 +547,8 @@ export default function Register() {
                       }
                       placeholder="minimum 8 characters"
                       className="por-input h-13 w-full rounded-none border border-white/10 bg-[#09111d] px-4 pr-12
-                       font-mono text-xs text-white outline-none placeholder:text-white/15 focus:border-[#f47b20]/60"
+                       font-mono text-xs text-white outline-none placeholder:text-white/15 focus:border-[#f47b20]/60
+                        focus:bg-[#050c15]"
                     />
 
                     <button
@@ -585,13 +570,12 @@ export default function Register() {
                     {[1, 2, 3, 4].map((level) => (
                       <span
                         key={level}
-                        className={`h-0.5 flex-1 ${
-                          passwordStrength >= level
-                            ? passwordStrength >= 3
-                              ? "bg-[#91a77e]"
-                              : "bg-[#f47b20]"
-                            : "bg-white/[0.07]"
-                        }`}
+                        className={`h-0.5 flex-1 ${passwordStrength >= level
+                          ? passwordStrength >= 3
+                            ? "bg-[#91a77e]"
+                            : "bg-[#f47b20]"
+                          : "bg-white/[0.07]"
+                          }`}
                       />
                     ))}
 
@@ -607,7 +591,7 @@ export default function Register() {
 
                   <label
                     htmlFor="confirmPassword"
-                    className="por-mono block text-[8px] uppercase tracking-[0.22em] text-white/35"
+                    className="por-mono block text-[10px] uppercase tracking-[0.22em] text-white/35"
                   >
                     Confirm password
                   </label>
@@ -628,12 +612,11 @@ export default function Register() {
                       }
                       placeholder="repeat your password"
                       className={`por-input h-13 w-full rounded-none bg-[#09111d] px-4 pr-12 font-mono text-xs text-white 
-                        outline-none placeholder:text-white/15 focus:border-[#f47b20]/60 ${
-                        confirmPassword &&
-                        confirmPassword !== password
+                        outline-none placeholder:text-white/15 focus:border-[#f47b20]/60  focus:bg-[#050c15] ${confirmPassword &&
+                          confirmPassword !== password
                           ? "border-red-400/50"
                           : "border-white/10"
-                      }`}
+                        }`}
                     />
 
                     <button
@@ -663,11 +646,11 @@ export default function Register() {
                     onChange={(e) =>
                       setAccepted(e.target.checked)
                     }
-                    className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[#f47b20]"
+                    className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[#ff6f00]"
                   />
 
-                  <span className="por-display text-[9px] leading-4 text-white/30">
-                    I understand that PorChatal is designed
+                  <span className="por-display text-[10px] leading-4 text-white/30">
+                    I understand that <span className="text-orange-500">PorChatal</span> is designed
                     around minimal data collection and
                     private conversations.
                   </span>
@@ -680,11 +663,10 @@ export default function Register() {
 
                 {message.text && (
                   <div
-                    className={`border px-3 py-2.5 text-[10px] ${
-                      message.type === "success"
-                        ? "border-[#91a77e]/20 bg-[#91a77e]/5 text-[#a8ba98]"
-                        : "border-red-400/20 bg-red-400/5 text-red-300"
-                    }`}
+                    className={`border px-3 py-2.5 text-[10px] ${message.type === "success"
+                      ? "border-[#91a77e]/20 bg-[#91a77e]/5 text-[#a8ba98]"
+                      : "border-red-400/20 bg-red-400/5 text-red-300"
+                      }`}
                   >
                     {message.text}
                   </div>
@@ -698,7 +680,7 @@ export default function Register() {
                   type="submit"
                   disabled={loading}
                   className="group flex h-13.25 w-full items-center justify-between bg-[#f47b20] px-5 text-black transition-all
-                   duration-300 hover:bg-[#ff8b38] hover:shadow-[0_12px_35px_rgba(244,123,32,0.12)] disabled:cursor-not-allowed
+                   duration-300 hover:bg-[#ff852f] hover:shadow-[0_12px_35px_rgba(244,123,32,0.12)] disabled:cursor-not-allowed
                     disabled:opacity-60"
                 >
 
@@ -718,18 +700,18 @@ export default function Register() {
                   LOGIN
               ------------------------------------------------- */}
 
-              <div className="mt-5 flex items-center justify-between border-t border-white/[0.07] pt-5">
+              <div className="mt-5 flex items-center justify-between border-t border-white/[0.07] pt-2">
 
-                <span className="por-display text-[10px] text-white/22">
+                <span className="por-display text-[12px] text-white/22">
                   Already have an account?
                 </span>
 
-                <button
-                  type="button"
-                  className="por-mono text-[8px] uppercase tracking-[0.18em] text-[#f47b20] transition hover:text-[#ff9a4d]"
+                <Link
+                  to="/login"
+                  className="por-mono text-[9.5px] uppercase tracking-[0.18em] text-[#f47b20] transition hover:text-[#ff9a4d]"
                 >
                   Sign in →
-                </button>
+                </Link>
 
               </div>
 
