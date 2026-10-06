@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import MidnightBlueLeaves from "../assets/Midnight Blue Leaves.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:5000";
 
@@ -86,6 +86,7 @@ export default function Register() {
     text: "",
   });
 
+  const navigate = useNavigate();
   /* =========================================================
      PASSWORD STRENGTH
   ========================================================= */
@@ -209,6 +210,9 @@ export default function Register() {
       setPassword("");
       setConfirmPassword("");
       setAccepted(false);
+
+      navigate("/chat");
+
     } catch (error) {
       setMessage({
         type: "error",

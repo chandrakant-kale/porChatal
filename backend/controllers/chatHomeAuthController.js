@@ -18,7 +18,7 @@ const chatHome = async (req, res) => {
                 message: "User not found"
             })
         }
-        console.log("User found");
+        // console.log("User found");
         
         return res.status(200).json({
             success: true,

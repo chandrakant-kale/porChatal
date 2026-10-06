@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MidnightBlueLeaves from "../assets/Midnight Blue Leaves.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:5000";
 
@@ -83,6 +83,7 @@ export default function Login() {
         text: "",
     });
 
+    const navigate = useNavigate();
     /* =========================================================
        LOGIN
     ========================================================= */
@@ -147,7 +148,7 @@ export default function Login() {
 
             // Add navigation here later.
             // Example with React Router:
-            // navigate("/chat");
+            navigate("/chat");
 
         } catch (error) {
             setMessage({
