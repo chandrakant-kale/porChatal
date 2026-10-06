@@ -2,14 +2,15 @@ const pool = require("../db");
 
 const chatHome = async (req, res) => {
     try {
+
         const id = req.chat;
+
 
         const result = await pool.query(`
         SELECT username 
         FROM users
         WHERE id = $1;`, [id]
         );
-        console.log(result);
 
         if (result.rowCount === 0) {
             return res.status(404).json({
@@ -17,10 +18,11 @@ const chatHome = async (req, res) => {
                 message: "User not found"
             })
         }
-
+        console.log("User found");
+        
         return res.status(200).json({
             success: true,
-            message: "User found"
+            user: result.rows[0]
         })
 
     } catch (error) {

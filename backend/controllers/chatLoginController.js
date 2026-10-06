@@ -5,9 +5,6 @@ const jwt = require("jsonwebtoken");
 const chatLogin = async (req, res) => {
     try {
         const { username, password } = req.body;
-        console.log("BODY:", req.body);
-        console.log("USERNAME:", username);
-        console.log("PASSWORD:", password);
 
         if (!username?.trim() || !password) {
             return res.status(400).json({
@@ -15,7 +12,6 @@ const chatLogin = async (req, res) => {
                 message: "Username and Password is required"
             })
         }
-        console.log("1");
 
 
         const newUsername = username.trim();
@@ -34,8 +30,6 @@ const chatLogin = async (req, res) => {
             });
         }
 
-        console.log("2");
-
         const user = checkResult.rows[0];
 
         const existPassword = user.password_hash;
@@ -48,7 +42,6 @@ const chatLogin = async (req, res) => {
                 message: "Invalid username or password"
             })
         }
-        console.log("4");
 
         if (!process.env.JWT_SECRET) {
             throw new Error("JWT_SECRET is not configured");

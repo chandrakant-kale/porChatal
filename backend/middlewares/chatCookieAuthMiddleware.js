@@ -15,10 +15,9 @@ const cookieAuth = async (req, res, next) => {
             token,
             process.env.JWT_SECRET
         )
-
-        console.log("verified", verified);
-
-        req.chat = jwt.verified.userId;
+        
+        req.chat = verified.userId;
+        
 
         next();
 

@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 
 const chatRegisterRouter = require("./routes/chatRegisterRouter");
 const chatLoginRouter = require("./routes/chatLoginRouter");
+const chatHomeAuthRouter = require("./routes/chatHomeAuthRouter");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(cookieParser());
 
 app.use("/register", chatRegisterRouter);
 app.use("/login", chatLoginRouter);
+app.use("/home", chatHomeAuthRouter);
 
 app.listen(5000, () => {
     console.log("server is running");
