@@ -1045,19 +1045,7 @@ export default function ChatHome({
               "
             />
 
-            <div
-              className="
-                pointer-events-none
-                absolute bottom-32.5 left-8
-                h-22.5 w-37.5 opacity-20
-              "
-              style={{
-                backgroundImage:
-                  "radial-gradient(#527a9f 1px, transparent 1px)",
-                backgroundSize: "14px 14px",
-              }}
-            />
-
+          
             {/* =================================================
                 HEADER
             ================================================= */}
