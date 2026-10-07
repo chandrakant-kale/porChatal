@@ -1737,19 +1737,9 @@ export default function ChatHome({
                       createConnectionCode
                     }
                     disabled={generatingCode}
-                    className="
-                      h-12 w-full
-                      border border-[#f47b20]/30
-                      bg-[#f47b20]/5
-                      text-[10px]
-                      font-bold
-                      text-[#f47b20]
-                      transition
-                      hover:border-[#f47b20]/60
-                      hover:bg-[#f47b20]/10
-                      disabled:cursor-not-allowed
-                      disabled:opacity-40
-                    "
+                    className=" h-12 w-full border border-[#f47b20]/30 bg-[#f47b20]/5 text-[10px] font-bold text-[#f47b20]
+                      transition hover:border-[#f47b20]/60 hover:bg-[#f47b20]/10 disabled:cursor-not-allowed
+                      disabled:opacity-40 "
                   >
                     {generatingCode
                       ? "Generating..."
@@ -1764,11 +1754,7 @@ export default function ChatHome({
                 <div className="h-px flex-1 bg-[#1e3045]" />
 
                 <span
-                  className="
-                    por-mono text-[7px]
-                    uppercase tracking-[0.2em]
-                    text-white/20
-                  "
+                  className=" por-mono text-[7px] uppercase tracking-[0.2em] text-white/20 "
                 >
                   or
                 </span>
@@ -1781,13 +1767,7 @@ export default function ChatHome({
               <form onSubmit={startConversation}>
                 <label
                   htmlFor="connectionCode"
-                  className="
-                    por-mono mb-2 block
-                    text-[8px]
-                    uppercase
-                    tracking-[0.2em]
-                    text-white/30
-                  "
+                  className=" por-mono mb-2 block text-[8px] uppercase tracking-[0.2em] text-white/30 "
                 >
                   Enter someone's code
                 </label>
@@ -1811,18 +1791,8 @@ export default function ChatHome({
                   }}
                   placeholder="ABC123"
                   maxLength={6}
-                  className="
-                    por-input h-12.5 w-full
-                    border border-[#1e3045]
-                    bg-[#05090f]
-                    px-4
-                    font-mono text-sm
-                    uppercase
-                    tracking-[0.2em]
-                    text-white
-                    outline-none
-                    placeholder:text-white/15
-                  "
+                  className=" por-input h-12.5 w-full border border-[#1e3045] bg-[#05090f] px-4 font-mono text-sm
+                    uppercase tracking-[0.2em] text-white outline-none placeholder:text-white/15"
                 />
 
                 <div className="mt-5 flex gap-2">
@@ -1831,15 +1801,8 @@ export default function ChatHome({
                     onClick={
                       closeConnectionModal
                     }
-                    className="
-                      h-11 flex-1
-                      border border-[#1e3045]
-                      text-[10px]
-                      text-white/40
-                      transition
-                      hover:border-[#385573]
-                      hover:text-white/70
-                    "
+                    className=" h-11 flex-1 border border-[#1e3045] text-[10px] text-white/40 transition
+                      hover:border-[#385573] hover:text-white/70 "
                   >
                     Cancel
                   </button>
@@ -1850,18 +1813,8 @@ export default function ChatHome({
                       connectionCode.length !== 6 ||
                       joining
                     }
-                    className="
-                      h-11 flex-1
-                      bg-[#f47b20]
-                      text-[10px]
-                      font-bold
-                      text-black
-                      transition
-                      hover:bg-[#ff8b38]
-                      disabled:cursor-not-allowed
-                      disabled:opacity-30
-                    "
-                  >
+                    className=" h-11 flex-1 bg-[#f47b20] text-[10px] font-bold text-black transition hover:bg-[#ff8b38]
+                      disabled:cursor-not-allowed disabled:opacity-30 " >
                     {joining
                       ? "Connecting..."
                       : "Connect"}
