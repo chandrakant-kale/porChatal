@@ -1,4 +1,10 @@
-import { useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
+const API_BASE_URL = "http://localhost:5000";
 
 /* =========================================================
    ICONS
@@ -141,38 +147,6 @@ function LogoutIcon() {
   );
 }
 
-function CopyIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      className="h-4 w-4"
-    >
-      <rect x="8" y="8" width="11" height="11" rx="2" />
-      <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
-    </svg>
-  );
-}
-
-function RefreshIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      className="h-4 w-4"
-    >
-      <path d="M20 11a8.1 8.1 0 0 0-14.8-4L3 10" />
-      <path d="M3 5v5h5" />
-      <path d="M4 13a8.1 8.1 0 0 0 14.8 4L21 14" />
-      <path d="M21 19v-5h-5" />
-    </svg>
-  );
-}
-
 /* =========================================================
    SIDEBAR
 ========================================================= */
@@ -226,6 +200,7 @@ function Sidebar({
 
         {mobile && (
           <button
+            type="button"
             onClick={onClose}
             className="text-white/35 transition hover:text-white"
             aria-label="Close sidebar"
@@ -239,6 +214,7 @@ function Sidebar({
 
       <div className="px-4">
         <button
+          type="button"
           onClick={onNewConversation}
           className="
             flex h-11.5 w-full items-center gap-3
@@ -309,21 +285,32 @@ function Sidebar({
             return (
               <button
                 key={chat.id}
+                type="button"
                 onClick={() => {
                   setActiveChat(chat);
 
                   if (mobile) {
-                    onClose();
+                    onClose?.();
                   }
                 }}
                 className={`
                   relative flex w-full items-center gap-3
                   px-3 py-3.5 text-left transition
-                  ${selected ? "bg-[#0d1a2b]" : "hover:bg-white/2.5"}
+                  ${
+                    selected
+                      ? "bg-[#0d1a2b]"
+                      : "hover:bg-white/2.5"
+                  }
                 `}
               >
                 {selected && (
-                  <span className="absolute left-0 top-2 h-[calc(100%-16px)] w-0.5 bg-[#f47b20]" />
+                  <span
+                    className="
+                      absolute left-0 top-2
+                      h-[calc(100%-16px)] w-0.5
+                      bg-[#f47b20]
+                    "
+                  />
                 )}
 
                 <div
@@ -400,69 +387,38 @@ function Sidebar({
 ========================================================= */
 
 export default function ChatHome({
-  conversations = [],
   messages = [],
-
-  /*
-    Backend callbacks
-
-    createConnectionCode()
-      -> POST /connections/code
-
-    onJoinConversation(code)
-      -> POST /connections/join
-
-    onSelectConversation(conversation)
-      -> load messages
-
-    onSendMessage(data)
-      -> send message
-
-    onDeleteConnection(userId)
-      -> DELETE /connections/:userId
-
-    onLogout()
-      -> logout
-  */
-
-  createConnectionCode,
   onSelectConversation,
   onSendMessage,
-  onJoinConversation,
-  onDeleteConnection,
   onLogout,
 }) {
-  /* =======================================================
-     UI STATE
-  ======================================================= */
+  const [conversations, setConversations] = useState([]);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const [sidebarWidth, setSidebarWidth] = useState(290);
-
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  const [showNewConversation, setShowNewConversation] = useState(false);
+  const [showNewConversation, setShowNewConversation] =
+    useState(false);
 
   const [showMenu, setShowMenu] = useState(false);
 
   const [connectionCode, setConnectionCode] = useState("");
 
   const [generatedCode, setGeneratedCode] = useState("");
-
   const [codeExpiresAt, setCodeExpiresAt] = useState(null);
 
   const [message, setMessage] = useState("");
-
   const [search, setSearch] = useState("");
-
   const [activeChat, setActiveChat] = useState(null);
 
   const [sending, setSending] = useState(false);
-
   const [joining, setJoining] = useState(false);
+  const [generatingCode, setGeneratingCode] =
+    useState(false);
 
-  const [generatingCode, setGeneratingCode] = useState(false);
+  const [deletingConnection, setDeletingConnection] =
+    useState(false);
 
   const [copied, setCopied] = useState(false);
 
@@ -471,67 +427,105 @@ export default function ChatHome({
   const [error, setError] = useState("");
 
   /* =======================================================
-     SELECT CONVERSATION
+     LOAD CONNECTIONS
   ======================================================= */
 
-  const handleSelectConversation = async (conversation) => {
-    setActiveChat(conversation);
+  const loadConnections = async () => {
+    try {
+      setError("");
 
-    setError("");
+      const response = await fetch(
+        `${API_BASE_URL}/connections`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
-    setShowMenu(false);
+      const data = await response.json();
 
-    if (onSelectConversation) {
-      try {
-        await onSelectConversation(conversation);
-      } catch (err) {
-        setError(
-          err?.message || "Unable to open this conversation."
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+            "Unable to load conversations."
         );
       }
+
+      const backendConnections =
+        Array.isArray(data)
+          ? data
+          : data?.connections || [];
+
+      const formattedConnections =
+        backendConnections.map((connection) => ({
+          id: connection.user_id,
+          user_id: connection.user_id,
+          username: connection.username,
+          message: "Connected",
+          time: "",
+          online: false,
+        }));
+
+      setConversations(formattedConnections);
+
+      return formattedConnections;
+    } catch (err) {
+      setError(
+        err?.message ||
+          "Unable to load conversations."
+      );
+
+      return [];
     }
   };
+
+  /* =======================================================
+     INITIAL CONNECTION LOAD
+  ======================================================= */
+
+  useEffect(() => {
+    loadConnections();
+  }, []);
 
   /* =======================================================
      GENERATE CONNECTION CODE
   ======================================================= */
 
-  const handleGenerateCode = async () => {
+  const createConnectionCode = async () => {
     if (generatingCode) {
-      return;
-    }
-
-    if (!createConnectionCode) {
-      setError("Connection code service is not connected yet.");
       return;
     }
 
     try {
       setGeneratingCode(true);
       setError("");
+      setGeneratedCode("");
+      setCodeExpiresAt(null);
       setCopied(false);
 
-      const result = await createConnectionCode();
-
-      /*
-        Expected backend response:
-
+      const response = await fetch(
+        `${API_BASE_URL}/connections/code`,
         {
-          success: true,
-          code: "A7F92C",
-          expiresAt: "..."
+          method: "POST",
+          credentials: "include",
         }
-      */
+      );
 
-      if (!result?.code) {
-        throw new Error("Server did not return a connection code.");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+            "Unable to generate connection code."
+        );
       }
 
-      setGeneratedCode(result.code);
-      setCodeExpiresAt(result.expiresAt || null);
+      setGeneratedCode(data.code || "");
+      setCodeExpiresAt(data.expiresAt || null);
     } catch (err) {
       setError(
-        err?.message || "Unable to generate connection code."
+        err?.message ||
+          "Unable to generate connection code."
       );
     } finally {
       setGeneratingCode(false);
@@ -548,34 +542,40 @@ export default function ChatHome({
     }
 
     try {
-      await navigator.clipboard.writeText(generatedCode);
+      await navigator.clipboard.writeText(
+        generatedCode
+      );
 
       setCopied(true);
 
       setTimeout(() => {
         setCopied(false);
-      }, 1600);
+      }, 1500);
     } catch {
-      setError("Unable to copy the connection code.");
+      setError("Unable to copy connection code.");
     }
   };
 
   /* =======================================================
-     RESET CONNECTION MODAL
+     SELECT CONVERSATION
   ======================================================= */
 
-  const closeConnectionModal = () => {
-    setShowNewConversation(false);
-
-    setConnectionCode("");
-
-    setGeneratedCode("");
-
-    setCodeExpiresAt(null);
-
-    setCopied(false);
-
+  const handleSelectConversation = async (
+    conversation
+  ) => {
+    setActiveChat(conversation);
     setError("");
+
+    if (onSelectConversation) {
+      try {
+        await onSelectConversation(conversation);
+      } catch (err) {
+        setError(
+          err?.message ||
+            "Unable to open this conversation."
+        );
+      }
+    }
   };
 
   /* =======================================================
@@ -585,51 +585,125 @@ export default function ChatHome({
   const startConversation = async (e) => {
     e.preventDefault();
 
-    const code = connectionCode.trim().toUpperCase();
+    const code = connectionCode
+      .trim()
+      .toUpperCase();
 
     if (!code || joining) {
       return;
     }
 
-    if (!onJoinConversation) {
-      setError("Connection service is not connected yet.");
+    if (code.length !== 6) {
+      setError(
+        "Connection code must be 6 characters."
+      );
       return;
     }
 
     try {
       setJoining(true);
-
       setError("");
 
-      /*
-        Expected backend call:
-
-        POST /connections/join
-
+      const response = await fetch(
+        `${API_BASE_URL}/connections/join`,
         {
-          code: "A7F92C"
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            code,
+          }),
         }
-      */
+      );
 
-      const conversation = await onJoinConversation(code);
+      const data = await response.json();
 
-      if (conversation) {
-        setActiveChat(conversation);
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+            "Unable to join this connection."
+        );
       }
 
       setConnectionCode("");
-
       setGeneratedCode("");
-
       setCodeExpiresAt(null);
+
+      const updatedConnections =
+        await loadConnections();
+
+      /*
+        Try to automatically select the newly
+        created connection.
+      */
+
+      const newConnection =
+        updatedConnections.find(
+          (item) =>
+            item.user_id === data?.userId ||
+            item.id === data?.userId
+        );
+
+      if (newConnection) {
+        await handleSelectConversation(
+          newConnection
+        );
+      }
 
       setShowNewConversation(false);
     } catch (err) {
       setError(
-        err?.message || "Unable to join this conversation."
+        err?.message ||
+          "Unable to join this conversation."
       );
     } finally {
       setJoining(false);
+    }
+  };
+
+  /* =======================================================
+     DELETE / DISCONNECT
+  ======================================================= */
+
+  const deleteConnection = async (userId) => {
+    if (!userId || deletingConnection) {
+      return;
+    }
+
+    try {
+      setDeletingConnection(true);
+      setError("");
+
+      const response = await fetch(
+        `${API_BASE_URL}/connections/${userId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+            "Unable to disconnect."
+        );
+      }
+
+      setActiveChat(null);
+      setShowMenu(false);
+
+      await loadConnections();
+    } catch (err) {
+      setError(
+        err?.message ||
+          "Unable to disconnect."
+      );
+    } finally {
+      setDeletingConnection(false);
     }
   };
 
@@ -642,18 +716,23 @@ export default function ChatHome({
 
     const cleanMessage = message.trim();
 
-    if (!cleanMessage || !activeChat || sending) {
+    if (
+      !cleanMessage ||
+      !activeChat ||
+      sending
+    ) {
       return;
     }
 
     if (!onSendMessage) {
-      setError("Messaging service is not connected yet.");
+      setError(
+        "Messaging service is not connected yet."
+      );
       return;
     }
 
     try {
       setSending(true);
-
       setError("");
 
       await onSendMessage({
@@ -664,39 +743,11 @@ export default function ChatHome({
       setMessage("");
     } catch (err) {
       setError(
-        err?.message || "Message could not be sent."
+        err?.message ||
+          "Message could not be sent."
       );
     } finally {
       setSending(false);
-    }
-  };
-
-  /* =======================================================
-     DISCONNECT
-  ======================================================= */
-
-  const handleDisconnect = async () => {
-    if (!activeChat) {
-      return;
-    }
-
-    if (!onDeleteConnection) {
-      setError("Connection service is not connected yet.");
-      return;
-    }
-
-    try {
-      setError("");
-
-      await onDeleteConnection(activeChat.user_id);
-
-      setActiveChat(null);
-
-      setShowMenu(false);
-    } catch (err) {
-      setError(
-        err?.message || "Unable to disconnect."
-      );
     }
   };
 
@@ -711,7 +762,6 @@ export default function ChatHome({
 
     try {
       setLoggingOut(true);
-
       setError("");
 
       if (onLogout) {
@@ -719,10 +769,13 @@ export default function ChatHome({
         return;
       }
 
-      setError("Logout service is not connected yet.");
+      setError(
+        "Logout service is not connected yet."
+      );
     } catch (err) {
       setError(
-        err?.message || "Unable to sign out."
+        err?.message ||
+          "Unable to sign out."
       );
     } finally {
       setLoggingOut(false);
@@ -730,24 +783,39 @@ export default function ChatHome({
   };
 
   /* =======================================================
-     RESIZE SIDEBAR
+     CLOSE NEW CONVERSATION MODAL
+  ======================================================= */
+
+  const closeConnectionModal = () => {
+    setShowNewConversation(false);
+    setConnectionCode("");
+    setGeneratedCode("");
+    setCodeExpiresAt(null);
+    setCopied(false);
+    setError("");
+  };
+
+  /* =======================================================
+     SIDEBAR RESIZE
   ======================================================= */
 
   const startSidebarResize = (e) => {
     e.preventDefault();
 
     const startX = e.clientX;
-
     const startWidth = sidebarWidth;
 
     const handleMouseMove = (event) => {
       const newWidth =
-        startWidth + (event.clientX - startX);
+        startWidth +
+        (event.clientX - startX);
 
-      if (newWidth < 120) {
+      if (newWidth < 180) {
         setSidebarCollapsed(true);
         return;
       }
+
+      setSidebarCollapsed(false);
 
       setSidebarWidth(
         Math.min(
@@ -781,7 +849,7 @@ export default function ChatHome({
   };
 
   /* =======================================================
-     RENDER
+     UI
   ======================================================= */
 
   return (
@@ -884,21 +952,20 @@ export default function ChatHome({
                   }
                   search={search}
                   setSearch={setSearch}
-                  onNewConversation={() => {
-                    setShowNewConversation(true);
-                    setError("");
-                  }}
+                  onNewConversation={() =>
+                    setShowNewConversation(true)
+                  }
                   onLogout={handleLogout}
                   loggingOut={loggingOut}
                 />
 
-                {/* DRAG HANDLE */}
-
                 <div
-                  onMouseDown={startSidebarResize}
+                  onMouseDown={
+                    startSidebarResize
+                  }
                   className="
-                    group absolute -right-0.75 top-0
-                    z-50 h-full w-1.5
+                    group absolute -right-0.75
+                    top-0 z-50 h-full w-1.5
                     cursor-col-resize
                   "
                   role="separator"
@@ -908,8 +975,7 @@ export default function ChatHome({
                   <div
                     className="
                       mx-auto h-full w-px
-                      bg-transparent
-                      transition
+                      bg-transparent transition
                       group-hover:bg-[#426582]
                     "
                   />
@@ -926,7 +992,9 @@ export default function ChatHome({
             <div className="fixed inset-0 z-50 lg:hidden">
               <button
                 type="button"
-                onClick={() => setSidebarOpen(false)}
+                onClick={() =>
+                  setSidebarOpen(false)
+                }
                 className="
                   absolute inset-0
                   bg-black/65
@@ -991,14 +1059,14 @@ export default function ChatHome({
             />
 
             {/* =================================================
-                CHAT HEADER
+                HEADER
             ================================================= */}
 
             <header
               className="
-                relative z-20
-                flex h-18 shrink-0
-                items-center justify-between
+                relative z-20 flex h-18
+                shrink-0 items-center
+                justify-between
                 border-b border-[#1d2d42]
                 bg-[#060a10]/90
                 px-4 sm:px-6
@@ -1056,7 +1124,7 @@ export default function ChatHome({
                         <span className="por-mono text-[7px] uppercase tracking-[0.15em] text-white/25">
                           {activeChat.online
                             ? "Online"
-                            : "Offline"}
+                            : "Connected"}
                         </span>
                       </div>
                     </div>
@@ -1077,7 +1145,6 @@ export default function ChatHome({
               {/* HEADER ACTIONS */}
 
               <div className="relative flex items-center gap-1">
-
                 <button
                   type="button"
                   className="
@@ -1096,7 +1163,9 @@ export default function ChatHome({
                 <button
                   type="button"
                   onClick={() =>
-                    setShowMenu((value) => !value)
+                    setShowMenu(
+                      (value) => !value
+                    )
                   }
                   className="
                     flex h-9 w-9
@@ -1113,16 +1182,21 @@ export default function ChatHome({
                 {showMenu && (
                   <div
                     className="
-                      absolute right-0 top-11 z-50
-                      w-44
+                      absolute right-0 top-11
+                      z-50 w-48
                       border border-[#263a52]
                       bg-[#080d14]
-                      py-1
-                      shadow-2xl
+                      py-1 shadow-2xl
                     "
                   >
                     <button
                       type="button"
+                      onClick={() => {
+                        setShowMenu(false);
+                        setError(
+                          "Clear messages is not connected yet."
+                        );
+                      }}
                       className="
                         flex h-10 w-full
                         items-center px-4
@@ -1138,7 +1212,16 @@ export default function ChatHome({
 
                     <button
                       type="button"
-                      onClick={handleDisconnect}
+                      disabled={
+                        !activeChat ||
+                        deletingConnection
+                      }
+                      onClick={() =>
+                        deleteConnection(
+                          activeChat?.user_id ||
+                            activeChat?.id
+                        )
+                      }
                       className="
                         flex h-10 w-full
                         items-center px-4
@@ -1147,9 +1230,13 @@ export default function ChatHome({
                         transition
                         hover:bg-red-400/4
                         hover:text-red-300
+                        disabled:cursor-not-allowed
+                        disabled:opacity-30
                       "
                     >
-                      Disconnect
+                      {deletingConnection
+                        ? "Disconnecting..."
+                        : "Disconnect"}
                     </button>
                   </div>
                 )}
@@ -1164,8 +1251,7 @@ export default function ChatHome({
                   relative z-30
                   border-b border-red-400/15
                   bg-red-400/4
-                  px-4 py-2
-                  text-center
+                  px-4 py-2 text-center
                   font-mono text-[8px]
                   text-red-300/80
                 "
@@ -1250,16 +1336,8 @@ export default function ChatHome({
                   </div>
 
                   <div className="flex-1 space-y-7">
-
                     {messages.length === 0 ? (
-                      <div
-                        className="
-                          flex h-full
-                          min-h-45
-                          items-center
-                          justify-center
-                        "
-                      >
+                      <div className="flex h-full min-h-45 items-center justify-center">
                         <p className="por-display text-[10px] text-white/20">
                           No messages yet.
                         </p>
@@ -1324,21 +1402,18 @@ export default function ChatHome({
                         </div>
                       ))
                     )}
-
                   </div>
                 </div>
               )}
-
             </div>
 
             {/* =================================================
-                CHAT COMPOSER
+                COMPOSER
             ================================================= */}
 
             <div
               className="
-                relative z-20
-                shrink-0
+                relative z-20 shrink-0
                 bg-[#05080d]
                 px-3 pb-4 pt-3
                 sm:px-6 sm:pb-5
@@ -1364,7 +1439,8 @@ export default function ChatHome({
                   <button
                     type="button"
                     className="
-                      flex h-10 w-10 shrink-0
+                      flex h-10 w-10
+                      shrink-0
                       items-center justify-center
                       rounded-full
                       text-white/65
@@ -1392,7 +1468,9 @@ export default function ChatHome({
                       }
                     }}
                     rows={1}
-                    disabled={!activeChat || sending}
+                    disabled={
+                      !activeChat || sending
+                    }
                     placeholder={
                       activeChat
                         ? "Type a message"
@@ -1403,7 +1481,8 @@ export default function ChatHome({
                       resize-none
                       bg-transparent
                       px-5 py-3
-                      font-mono text-[15px]
+                      font-mono
+                      text-[15px]
                       leading-5
                       text-white
                       outline-none
@@ -1414,7 +1493,6 @@ export default function ChatHome({
                   />
 
                   <div className="flex shrink-0 items-center gap-1">
-
                     <button
                       type="button"
                       className="
@@ -1458,8 +1536,7 @@ export default function ChatHome({
                       className="
                         flex h-10 w-10
                         shrink-0
-                        items-center
-                        justify-center
+                        items-center justify-center
                         rounded-full
                         bg-[#f47b20]
                         text-black
@@ -1475,7 +1552,6 @@ export default function ChatHome({
                     >
                       <SendIcon />
                     </button>
-
                   </div>
                 </div>
 
@@ -1483,7 +1559,8 @@ export default function ChatHome({
                   className="
                     mt-2 text-center
                     font-mono text-[6px]
-                    uppercase tracking-[0.14em]
+                    uppercase
+                    tracking-[0.14em]
                     text-white/15
                   "
                 >
@@ -1503,8 +1580,7 @@ export default function ChatHome({
             className="
               fixed inset-0 z-60
               flex items-center justify-center
-              bg-black/70
-              px-5
+              bg-black/70 px-5
               backdrop-blur-sm
             "
           >
@@ -1513,25 +1589,18 @@ export default function ChatHome({
                 w-full max-w-105
                 border border-[#263a52]
                 bg-[#080d14]
-                p-6
-                shadow-2xl
+                p-6 shadow-2xl
                 sm:p-7
               "
             >
-
-              {/* HEADER */}
-
               <div className="mb-6">
-
                 <div className="mb-3 flex items-center gap-2">
                   <span className="h-1.5 w-1.5 bg-[#f47b20]" />
 
                   <span
                     className="
-                      por-mono
-                      text-[7px]
-                      uppercase
-                      tracking-[0.25em]
+                      por-mono text-[7px]
+                      uppercase tracking-[0.25em]
                       text-[#f47b20]
                     "
                   >
@@ -1558,122 +1627,142 @@ export default function ChatHome({
                     text-white/35
                   "
                 >
-                  Generate your own temporary code
-                  or enter a code shared with you.
+                  Generate a temporary code and
+                  share it with someone, or enter
+                  a code they shared with you.
                 </p>
-
               </div>
 
-              {/* =================================================
-                  GENERATE CODE
-              ================================================= */}
+              {/* GENERATE CODE */}
 
-              <div className="mb-6">
-
-                <div className="mb-2 flex items-center justify-between">
-                  <label
+              <div
+                className="
+                  border border-[#1e3045]
+                  bg-[#05090f]
+                  p-4
+                "
+              >
+                <div className="mb-3">
+                  <p
                     className="
-                      por-mono
-                      text-[8px]
-                      uppercase
-                      tracking-[0.2em]
+                      por-mono text-[8px]
+                      uppercase tracking-[0.2em]
                       text-white/30
                     "
                   >
                     Your connection code
-                  </label>
+                  </p>
 
-                  {codeExpiresAt && (
-                    <span className="por-mono text-[7px] text-white/20">
-                      Expires in 3 minutes
-                    </span>
-                  )}
+                  <p className="mt-1 text-[9px] text-white/20">
+                    Create a one-time code to connect
+                    with another user.
+                  </p>
                 </div>
 
                 {generatedCode ? (
-                  <div
-                    className="
-                      border
-                      border-[#f47b20]/30
-                      bg-[#0a1119]
-                      p-4
-                    "
-                  >
-                    <div className="flex items-center justify-between gap-3">
-
-                      <span
+                  <>
+                    <div className="flex items-center gap-2">
+                      <div
                         className="
-                          por-mono
-                          text-2xl
-                          font-bold
-                          tracking-[0.22em]
-                          text-[#f47b20]
+                          flex h-13 flex-1
+                          items-center justify-center
+                          border border-[#f47b20]/30
+                          bg-[#f47b20]/5
                         "
                       >
-                        {generatedCode}
-                      </span>
+                        <span
+                          className="
+                            por-mono
+                            text-xl
+                            font-medium
+                            tracking-[0.3em]
+                            text-[#f47b20]
+                          "
+                        >
+                          {generatedCode}
+                        </span>
+                      </div>
 
                       <button
                         type="button"
-                        onClick={copyConnectionCode}
+                        onClick={
+                          copyConnectionCode
+                        }
                         className="
-                          flex h-9
-                          items-center gap-2
-                          border border-[#263a52]
-                          px-3
-                          text-[8px]
-                          text-white/45
+                          h-13 px-4
+                          border border-[#1e3045]
+                          text-[9px]
+                          text-white/50
                           transition
                           hover:border-[#385573]
                           hover:text-white
                         "
                       >
-                        <CopyIcon />
-
-                        {copied ? "Copied" : "Copy"}
+                        {copied
+                          ? "Copied"
+                          : "Copy"}
                       </button>
-
                     </div>
 
-                    <p
+                    <p className="mt-3 text-[8px] text-white/25">
+                      This code expires in 3 minutes
+                      and can only be used once.
+                    </p>
+
+                    {codeExpiresAt && (
+                      <p className="mt-1 font-mono text-[7px] text-white/15">
+                        Expires:{" "}
+                        {new Date(
+                          codeExpiresAt
+                        ).toLocaleTimeString()}
+                      </p>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={
+                        createConnectionCode
+                      }
+                      disabled={generatingCode}
                       className="
-                        por-mono mt-3
-                        text-[7px]
-                        leading-4
-                        text-white/25
+                        mt-3 h-9 w-full
+                        border border-[#1e3045]
+                        text-[8px]
+                        uppercase
+                        tracking-[0.15em]
+                        text-white/35
+                        transition
+                        hover:border-[#385573]
+                        hover:text-white/70
+                        disabled:opacity-30
                       "
                     >
-                      Share this code with the person
-                      you want to connect with. It can
-                      only be used once.
-                    </p>
-                  </div>
+                      {generatingCode
+                        ? "Generating..."
+                        : "Generate new code"}
+                    </button>
+                  </>
                 ) : (
                   <button
                     type="button"
-                    onClick={handleGenerateCode}
+                    onClick={
+                      createConnectionCode
+                    }
                     disabled={generatingCode}
                     className="
-                      flex h-12.5
-                      w-full
-                      items-center
-                      justify-center
-                      gap-2
-                      border
-                      border-[#f47b20]/25
+                      h-12 w-full
+                      border border-[#f47b20]/30
                       bg-[#f47b20]/5
-                      text-[9px]
+                      text-[10px]
                       font-bold
                       text-[#f47b20]
                       transition
-                      hover:border-[#f47b20]/50
+                      hover:border-[#f47b20]/60
                       hover:bg-[#f47b20]/10
                       disabled:cursor-not-allowed
                       disabled:opacity-40
                     "
                   >
-                    <RefreshIcon />
-
                     {generatingCode
                       ? "Generating..."
                       : "Generate connection code"}
@@ -1683,35 +1772,29 @@ export default function ChatHome({
 
               {/* DIVIDER */}
 
-              <div className="mb-6 flex items-center gap-3">
-                <div className="h-px flex-1 bg-[#1d2d42]" />
+              <div className="my-5 flex items-center gap-3">
+                <div className="h-px flex-1 bg-[#1e3045]" />
 
                 <span
                   className="
-                    por-mono
-                    text-[7px]
-                    uppercase
-                    tracking-[0.2em]
+                    por-mono text-[7px]
+                    uppercase tracking-[0.2em]
                     text-white/20
                   "
                 >
                   or
                 </span>
 
-                <div className="h-px flex-1 bg-[#1d2d42]" />
+                <div className="h-px flex-1 bg-[#1e3045]" />
               </div>
 
-              {/* =================================================
-                  JOIN WITH CODE
-              ================================================= */}
+              {/* JOIN */}
 
               <form onSubmit={startConversation}>
-
                 <label
                   htmlFor="connectionCode"
                   className="
-                    por-mono mb-2
-                    block
+                    por-mono mb-2 block
                     text-[8px]
                     uppercase
                     tracking-[0.2em]
@@ -1725,26 +1808,29 @@ export default function ChatHome({
                   id="connectionCode"
                   autoFocus
                   value={connectionCode}
-                  maxLength={6}
-                  onChange={(e) =>
-                    setConnectionCode(
+                  onChange={(e) => {
+                    const value =
                       e.target.value
                         .toUpperCase()
-                        .replace(/[^A-F0-9]/g, "")
-                    )
-                  }
-                  placeholder="A7F92C"
+                        .replace(
+                          /[^0-9A-F]/g,
+                          ""
+                        )
+                        .slice(0, 6);
+
+                    setConnectionCode(value);
+                    setError("");
+                  }}
+                  placeholder="ABC123"
+                  maxLength={6}
                   className="
-                    por-input
-                    h-12.5
-                    w-full
-                    border
-                    border-[#1e3045]
+                    por-input h-12.5 w-full
+                    border border-[#1e3045]
                     bg-[#05090f]
                     px-4
-                    font-mono
-                    text-sm
-                    tracking-[0.15em]
+                    font-mono text-sm
+                    uppercase
+                    tracking-[0.2em]
                     text-white
                     outline-none
                     placeholder:text-white/15
@@ -1752,15 +1838,14 @@ export default function ChatHome({
                 />
 
                 <div className="mt-5 flex gap-2">
-
                   <button
                     type="button"
-                    onClick={closeConnectionModal}
+                    onClick={
+                      closeConnectionModal
+                    }
                     className="
-                      h-11
-                      flex-1
-                      border
-                      border-[#1e3045]
+                      h-11 flex-1
+                      border border-[#1e3045]
                       text-[10px]
                       text-white/40
                       transition
@@ -1774,12 +1859,11 @@ export default function ChatHome({
                   <button
                     type="submit"
                     disabled={
-                      connectionCode.trim().length !== 6 ||
+                      connectionCode.length !== 6 ||
                       joining
                     }
                     className="
-                      h-11
-                      flex-1
+                      h-11 flex-1
                       bg-[#f47b20]
                       text-[10px]
                       font-bold
@@ -1794,10 +1878,8 @@ export default function ChatHome({
                       ? "Connecting..."
                       : "Connect"}
                   </button>
-
                 </div>
               </form>
-
             </div>
           </div>
         )}

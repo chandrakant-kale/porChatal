@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const createConnectionCode = async (req, res) => {
 
     try {
+        const userId = req.chat;
         const code = crypto.randomBytes(4).toString("hex").toUpperCase().slice(0, 6);
 
         codeHash = crypto.createHash("sha256").update(code).digest("hex");
@@ -42,7 +43,7 @@ const createConnectionCode = async (req, res) => {
 const joinConnection = async (req, res) => {
     const client = await pool.connect();
     try {
-        const userId = req.chat.userId;
+        const userId = req.chat;
         const { code } = req.body;
 
         if (!code || typeof code !== "string") {
@@ -203,7 +204,7 @@ const joinConnection = async (req, res) => {
 
 const getConnections = async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.chat;
 
         const result = await pool.query(
             `
@@ -259,7 +260,7 @@ const getConnections = async (req, res) => {
 
 const deleteConnection = async (req, res) => {
     try {
-        const currentUserId = req.user.userId;
+        const currentUserId = req.chat;
         const otherUserId = req.params.userId;
 
         if (currentUserId === otherUserId) {
