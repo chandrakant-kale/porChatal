@@ -90,7 +90,7 @@ export default function Register() {
   /* =========================================================
      PASSWORD STRENGTH
   ========================================================= */
-
+ 
   const passwordStrength = useMemo(() => {
     if (!password) return 0;
 
