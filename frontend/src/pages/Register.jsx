@@ -211,7 +211,7 @@ export default function Register() {
       setConfirmPassword("");
       setAccepted(false);
 
-      navigate("/chat");
+      navigate("/home/chat");
 
     } catch (error) {
       setMessage({

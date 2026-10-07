@@ -146,9 +146,7 @@ export default function Login() {
             setUsername("");
             setPassword("");
 
-            // Add navigation here later.
-            // Example with React Router:
-            navigate("/chat");
+            navigate("/home/chat");
 
         } catch (error) {
             setMessage({

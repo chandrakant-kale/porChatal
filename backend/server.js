@@ -8,6 +8,8 @@ const chatRegisterRouter = require("./routes/chatRegisterRouter");
 const chatLoginRouter = require("./routes/chatLoginRouter");
 const chatHomeAuthRouter = require("./routes/chatHomeAuthRouter");
 
+const connectionRouter = require("./routes/connectionRoutes");
+
 const app = express();
 
 app.use(cors({
@@ -20,6 +22,8 @@ app.use(cookieParser());
 app.use("/register", chatRegisterRouter);
 app.use("/login", chatLoginRouter);
 app.use("/home", chatHomeAuthRouter);
+
+app.use("/connection", connectionRouter);
 
 app.listen(5000, () => {
     console.log("server is running");
