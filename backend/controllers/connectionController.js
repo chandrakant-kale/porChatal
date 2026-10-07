@@ -1,6 +1,5 @@
 const pool = require("../db");
 const crypto = require("crypto");
-const bcrypt = require("bcrypt");
 
 
 const createConnectionCode = async (req, res) => {
@@ -38,10 +37,12 @@ const createConnectionCode = async (req, res) => {
     }
 };
 
+
+
 const joinConnection = async (req, res) => {
     const client = await pool.connect();
     try {
-        const userId = req.user.userId;
+        const userId = req.chat.userId;
         const { code } = req.body;
 
         if (!code || typeof code !== "string") {
@@ -197,6 +198,8 @@ const joinConnection = async (req, res) => {
         client.release();
     }
 };
+
+
 
 const getConnections = async (req, res) => {
     try {
