@@ -43,17 +43,17 @@ export default function ChatHome() {
         </div>
         <div>
           <button
-            onClick={() => setShowMenu(!showMenu)}
+            onClick={optionBtn}
             className=" text-2xl text-white/50 hover:text-white">
             ...
           </button>
           {showMenu &&
             <div className='fixed border border-blue-900/30 right-15 px-3 w-40 flex flex-col'>
               <button
-                onClick={() => setShowMenu(!showMenu)}
+                onClick={optionBtn}
                 className='p-2 text-white/50 text-sm'>Connect</button>
               <button
-                onClick={() => setShowMenu(!showMenu)}
+                onClick={optionBtn}
                 className='p-2 text-white/50 text-sm'>Disconnect</button>
             </div>}
         </div>
