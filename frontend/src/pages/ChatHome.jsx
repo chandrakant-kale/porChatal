@@ -59,6 +59,7 @@ export default function ChatHome() {
             </div>}
         </div>
       </header>
+      {/* others */}
       <section>
 
       </section>
