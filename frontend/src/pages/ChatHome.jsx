@@ -36,7 +36,10 @@ export default function ChatHome() {
 
         <div className='flex justify-center items-center gap-2'>
           <div className='h-3 w-3 rounded-full bg-orange-600' />
-          <div>............</div>
+          <div>
+            <p>{user.username}</p>
+            <p className='text-white/50 text-sm'>message yourself</p>
+          </div>
         </div>
         <div>
           <button
@@ -45,13 +48,13 @@ export default function ChatHome() {
             ...
           </button>
           {showMenu &&
-            <div className='fixed border border-blue-900/30 right-15 h-25 w-40 flex flex-col'>
+            <div className='fixed border border-blue-900/30 right-15 px-3 w-40 flex flex-col'>
               <button
-                onClick={() => setShowMenu(!option)}
-                className='p-2'>Connect</button>
+                onClick={() => setShowMenu(!showMenu)}
+                className='p-2 text-white/50 text-sm'>Connect</button>
               <button
-                onClick={() => setShowMenu(!option)}
-                className='p-2'>Disconnect</button>
+                onClick={() => setShowMenu(!showMenu)}
+                className='p-2 text-white/50 text-sm'>Disconnect</button>
             </div>}
         </div>
       </header>
