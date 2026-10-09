@@ -42,6 +42,7 @@ export default function ChatHome() {
           </div>
         </div>
         <div>
+          {/* option */}
           <button
             onClick={optionBtn}
             className=" text-2xl text-white/50 hover:text-white">
