@@ -96,8 +96,8 @@ function Avatar({ name = "User", small = false }) {
 
   return (
     <div
-      className={`flex shrink-0 items-center justify-center border border-[#9A9083] bg-[#C9C0B4] font-semibold
-         text-[#101B2D] ${small ? "h-8 w-8 text-[10px]" : "h-10 w-10 text-xs"}`}
+      className={`flex shrink-0 items-center justify-center border border-[#9A9083] bg-[#C9C0B4] font-semibold text-[#101B2D] ${small ? "h-8 w-8 text-[10px]" : "h-10 w-10 text-xs"
+        }`}
     >
       {initials}
     </div>
@@ -138,11 +138,16 @@ export default function Chat({
   const [activeId, setActiveId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
   const [messageText, setMessageText] = useState("");
   const [connectionCode, setConnectionCode] = useState("");
+
+  const [showConnectionOptions, setShowConnectionOptions] =
+    useState(false);
   const [showJoinForm, setShowJoinForm] = useState(false);
-  const [generatedCode, setGeneratedCode] = useState("");
   const [showGeneratedCode, setShowGeneratedCode] = useState(false);
+
+  const [generatedCode, setGeneratedCode] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -177,16 +182,26 @@ export default function Chat({
     onSelectConversation?.(chat);
   }
 
-  function openJoinModal() {
-    setConnectionCode("");
+  function openConnectionOptions() {
     setError("");
+    setShowJoinForm(false);
     setShowGeneratedCode(false);
-    setShowJoinForm(true);
+    setShowConnectionOptions(true);
     setMobileSidebarOpen(false);
   }
 
-  function closeModal() {
+  function openImportModal() {
+    setConnectionCode("");
+    setError("");
+    setShowConnectionOptions(false);
+    setShowGeneratedCode(false);
+    setShowJoinForm(true);
+  }
+
+  function closeModals() {
     if (busy) return;
+
+    setShowConnectionOptions(false);
     setShowJoinForm(false);
     setShowGeneratedCode(false);
     setConnectionCode("");
@@ -213,6 +228,7 @@ export default function Chat({
       }
 
       setGeneratedCode(code);
+      setShowConnectionOptions(false);
       setShowJoinForm(false);
       setShowGeneratedCode(true);
     } catch (err) {
@@ -239,6 +255,7 @@ export default function Chat({
 
     try {
       await onJoinConversation(code);
+
       setConnectionCode("");
       setShowJoinForm(false);
     } catch (err) {
@@ -305,7 +322,7 @@ export default function Chat({
   }
 
   function toggleSidebar() {
-    if (window.innerWidth < 768) {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
       setMobileSidebarOpen((value) => !value);
       setSidebarOpen(true);
       return;
@@ -315,9 +332,12 @@ export default function Chat({
     setMobileSidebarOpen(false);
   }
 
+  const modalOpen =
+    showConnectionOptions || showJoinForm || showGeneratedCode;
+
   return (
     <div
-      className="flex h-dvh min-h-120 overflow-hidden font-sans antialiased"
+      className="flex h-dvh min-h-[480px] overflow-hidden font-sans antialiased"
       style={{ background: C.navy, color: C.light }}
     >
       {/* Mobile sidebar overlay */}
@@ -334,11 +354,10 @@ export default function Chat({
       {sidebarOpen && (
         <aside
           className={`${mobileSidebarOpen ? "flex" : "hidden"
-            } fixed inset-y-0 left-0 z-40 w-70 flex-col border-r border-[#958B80] bg-[#B7ADA0] text-[#101B2D] 
-          md:relative md:flex`}
+            } fixed inset-y-0 left-0 z-40 w-[280px] flex-col border-r border-[#958B80] bg-[#B7ADA0] text-[#101B2D] md:relative md:flex`}
         >
           {/* Brand */}
-          <div className="flex h-17 shrink-0 items-center justify-between border-b border-[#9D9387] px-5">
+          <div className="flex h-[68px] shrink-0 items-center justify-between border-b border-[#9D9387] px-5">
             <a href="/" className="flex items-center gap-2">
               <BrandMark />
               <span className="text-base font-semibold tracking-[-0.6px]">
@@ -356,38 +375,19 @@ export default function Chat({
             </button>
           </div>
 
-          {/* Connection actions */}
-          <div className="shrink-0 space-y-1 border-b border-[#9D9387] p-4">
-            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[1.5px] text-[#625A51]">
-              Connections
-            </p>
-
+          {/* Single connection button */}
+          <div className="shrink-0 border-b border-[#9D9387] p-4">
             <button
               type="button"
-              onClick={openJoinModal}
-              className="flex min-h-10 w-full items-center gap-3 border border-[#536078] px-3 text-left text-sm 
-              text-[#101B2D] hover:border-[#B42335] hover:text-[#B42335]"
+              onClick={openConnectionOptions}
+              className="flex min-h-10 w-full items-center justify-center gap-2 border border-[#536078] px-3 text-sm text-[#101B2D] transition-colors hover:border-[#B42335] hover:text-[#B42335] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B42335]"
             >
               <Icon name="plus" size={16} />
-              Import connection code
-            </button>
-
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => {
-                setMobileSidebarOpen(false);
-                handleCreateCode();
-              }}
-              className="flex min-h-10 w-full items-center gap-3 px-3 text-left text-sm text-[#34332F] hover:text-[#B42335] 
-              disabled:opacity-40"
-            >
-              <Icon name="copy" size={16} />
-              {busy ? "Please wait..." : "Generate connection code"}
+              Connect
             </button>
           </div>
 
-          {/* Conversation heading */}
+          {/* Conversations heading */}
           <div className="border-b border-[#9D9387] px-5 py-4">
             <p className="text-[10px] font-semibold uppercase tracking-[1.5px] text-[#625A51]">
               Conversations
@@ -406,7 +406,7 @@ export default function Chat({
                   No conversations yet.
                 </p>
                 <p className="mt-2 text-xs leading-5 text-[#625A51]">
-                  Import a connection code to start chatting.
+                  Select Connect to start a conversation.
                 </p>
               </div>
             ) : (
@@ -424,8 +424,7 @@ export default function Chat({
                     <button
                       type="button"
                       onClick={() => selectChat(chat)}
-                      className="flex min-w-0 flex-1 items-center gap-3 px-3 py-3 text-left focus-visible:outline-none
-                       focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[#B42335]"
+                      className="flex min-w-0 flex-1 items-center gap-3 px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[#B42335]"
                     >
                       <Avatar
                         name={chat.name || chat.username || "User"}
@@ -436,6 +435,7 @@ export default function Chat({
                         <span className="block truncate text-[13px] font-medium">
                           {chat.name || chat.username || "Unknown user"}
                         </span>
+
                         <span className="mt-1 block truncate text-xs text-[#625A51]">
                           {chat.lastMessage || "No messages yet"}
                         </span>
@@ -449,8 +449,7 @@ export default function Chat({
                         title="Remove connection"
                         disabled={busy}
                         onClick={() => handleDelete(chat)}
-                        className="mr-1 p-2 text-[#625A51] hover:text-[#B42335] disabled:opacity-40 sm:opacity-0
-                         sm:group-hover:opacity-100"
+                        className="mr-1 p-2 text-[#625A51] hover:text-[#B42335] disabled:opacity-40 sm:opacity-0 sm:group-hover:opacity-100"
                       >
                         <Icon name="trash" size={15} />
                       </button>
@@ -488,13 +487,12 @@ export default function Chat({
       {/* Main workspace */}
       <main className="flex min-w-0 flex-1 flex-col">
         {/* Header */}
-        <header className="flex min-h-17 shrink-0 items-center gap-3 border-b border-[#344155] px-4 py-3 sm:px-6">
+        <header className="flex min-h-[68px] shrink-0 items-center gap-3 border-b border-[#344155] px-4 py-3 sm:px-6">
           <button
             type="button"
             aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"}
             onClick={toggleSidebar}
-            className="p-2 text-[#B7ADA0] hover:text-white focus-visible:outline-none focus-visible:ring-1
-             focus-visible:ring-[#B42335]"
+            className="p-2 text-[#B7ADA0] hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B42335]"
           >
             <Icon name="menu" />
           </button>
@@ -507,20 +505,21 @@ export default function Chat({
                 ? activeChat.name || activeChat.username || "Conversation"
                 : "Messages"}
             </h1>
+
             <p className="mt-1 text-[11px] text-[#B7ADA0]">
               {activeChat ? "Conversation" : "PorChatal workspace"}
             </p>
           </div>
         </header>
 
-        {/* Error message */}
-        {error && !showJoinForm && !showGeneratedCode && (
+        {/* Main error message */}
+        {error && !modalOpen && (
           <div
             role="alert"
-            className="mx-4 mt-4 flex items-start justify-between gap-3 border border-[#B42335] px-3 py-3 text-xs 
-            text-[#E6A1A8] sm:mx-6"
+            className="mx-4 mt-4 flex items-start justify-between gap-3 border border-[#B42335] px-3 py-3 text-xs text-[#E6A1A8] sm:mx-6"
           >
             <span>{error}</span>
+
             <button
               type="button"
               aria-label="Dismiss error"
@@ -535,7 +534,7 @@ export default function Chat({
         {/* Empty state */}
         {!activeChat ? (
           <section className="flex flex-1 items-center justify-center overflow-y-auto px-6 py-12">
-            <div className="w-full max-w-115">
+            <div className="w-full max-w-[460px]">
               <div className="mb-8 flex items-center gap-4">
                 <BrandMark />
                 <div className="h-px flex-1 bg-[#344155]" />
@@ -549,35 +548,27 @@ export default function Chat({
                 No conversation selected
               </h2>
 
-              <p className="mt-5 max-w-92.5 text-sm leading-7 text-[#B7ADA0]">
-                Select a conversation from the sidebar or import a connection
-                code to start chatting.
+              <p className="mt-5 max-w-[370px] text-sm leading-7 text-[#B7ADA0]">
+                Select a conversation from the sidebar or connect with
+                someone using a connection code.
               </p>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8">
                 <button
                   type="button"
-                  onClick={openJoinModal}
-                  className="inline-flex min-h-11 items-center gap-2 border border-[#B42335] px-4 text-sm text-[#D45B69]
-                   hover:bg-[#B42335]/10"
+                  onClick={openConnectionOptions}
+                  className="inline-flex min-h-11 items-center gap-2 border border-[#B42335] px-4 text-sm text-[#D45B69] transition-colors hover:bg-[#B42335]/10"
                 >
                   <Icon name="plus" size={16} />
-                  Import connection code
+                  Connect
                 </button>
-
-                <OutlineButton
-                  onClick={handleCreateCode}
-                  disabled={busy}
-                >
-                  Generate code
-                  <Icon name="copy" size={15} />
-                </OutlineButton>
               </div>
 
               <div className="mt-12 flex items-start gap-3 border-t border-[#344155] pt-5">
                 <span className="mt-0.5 text-[#B7ADA0]">
                   <Icon name="message" size={18} />
                 </span>
+
                 <p className="max-w-sm text-xs leading-5 text-[#B7ADA0]">
                   Your conversations appear here when you select a connection.
                 </p>
@@ -597,9 +588,11 @@ export default function Chat({
                     <div className="border border-[#536078] p-4 text-[#B7ADA0]">
                       <Icon name="message" size={23} />
                     </div>
+
                     <p className="mt-5 text-sm text-[#E8E0D5]">
                       No messages yet
                     </p>
+
                     <p className="mt-2 text-xs text-[#B7ADA0]">
                       Send a message to start the conversation.
                     </p>
@@ -630,7 +623,7 @@ export default function Chat({
                                 : "border-[#344155] bg-[#101B2D]"
                               }`}
                           >
-                            <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6 text-[#E8E0D5]">
+                            <p className="whitespace-pre-wrap break-words text-sm leading-6 text-[#E8E0D5]">
                               {message.text || message.content || ""}
                             </p>
 
@@ -677,17 +670,14 @@ export default function Chat({
                   aria-label="Write a message"
                   maxLength={5000}
                   rows={1}
-                  className="min-h-11 max-h-36 min-w-0 flex-1 resize-y border border-[#536078] bg-[#0A1220] px-3 py-3 text-sm
-                   text-[#E8E0D5] outline-none placeholder:text-[#B7ADA0]/70 focus:border-[#B42335]"
+                  className="min-h-11 max-h-36 min-w-0 flex-1 resize-y border border-[#536078] bg-[#0A1220] px-3 py-3 text-sm text-[#E8E0D5] outline-none placeholder:text-[#B7ADA0]/70 focus:border-[#B42335]"
                 />
 
                 <button
                   type="submit"
                   aria-label="Send message"
                   disabled={busy || !messageText.trim()}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center border border-[#B42335] text-[#D45B69]
-                   hover:bg-[#B42335]/10 hover:text-[#E8E0D5] focus-visible:outline-none focus-visible:ring-1
-                    focus-visible:ring-[#B42335] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center border border-[#B42335] text-[#D45B69] transition-colors hover:bg-[#B42335]/10 hover:text-[#E8E0D5] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B42335] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Icon name="send" size={17} />
                 </button>
@@ -697,31 +687,38 @@ export default function Chat({
         )}
       </main>
 
-      {/* Connection modal */}
-      {(showJoinForm || showGeneratedCode) && (
+      {/* Connection modals */}
+      {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 px-4 py-6 backdrop-blur-md"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeModal();
+            if (event.target === event.currentTarget) {
+              closeModals();
+            }
           }}
         >
           <section
             role="dialog"
             aria-modal="true"
             aria-labelledby="connection-modal-title"
-            className="w-full max-w-122.5 border border-[#344155] bg-[#101B2D] px-6 py-8 sm:px-9 sm:py-10"
+            className="w-full max-w-[490px] border border-[#344155] bg-[#101B2D] px-6 py-8 sm:px-9 sm:py-10"
           >
+            {/* Modal heading */}
             <div className="mb-6 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 <span className="h-2 w-2 shrink-0 bg-[#B42335]" />
                 <span className="text-[9px] font-semibold uppercase tracking-[2px] text-[#D45B69]">
-                  {showJoinForm ? "New conversation" : "Share connection"}
+                  {showConnectionOptions
+                    ? "Connections"
+                    : showJoinForm
+                      ? "New conversation"
+                      : "Share connection"}
                 </span>
               </div>
 
               <button
                 type="button"
-                onClick={closeModal}
+                onClick={closeModals}
                 aria-label="Close modal"
                 disabled={busy}
                 className="p-1 text-[#B7ADA0] hover:text-white disabled:opacity-40"
@@ -730,119 +727,210 @@ export default function Chat({
               </button>
             </div>
 
-            <h2
-              id="connection-modal-title"
-              className="text-[27px] font-semibold leading-tight tracking-[-1.2px] text-[#E8E0D5] sm:text-[32px]"
-            >
-              {showJoinForm
-                ? "Connect with someone."
-                : "Share your connection code."}
-            </h2>
-
-            <p className="mt-3 text-xs leading-5 text-[#B7ADA0] sm:text-[13px]">
-              {showJoinForm
-                ? "Enter the temporary connection code shared with you."
-                : "Share this temporary code with the person you want to connect with."}
-            </p>
-
-            {/* Import code form */}
-            {showJoinForm && (
-              <form onSubmit={handleJoin} className="mt-10">
-                <label
-                  htmlFor="modal-connection-code"
-                  className="mb-5 block text-[9px] font-semibold uppercase tracking-[1.8px] text-[#B7ADA0]"
+            {/* Combined Connect menu */}
+            {showConnectionOptions && (
+              <>
+                <h2
+                  id="connection-modal-title"
+                  className="text-[27px] font-semibold leading-tight tracking-[-1.2px] text-[#E8E0D5] sm:text-[32px]"
                 >
-                  Connection code
-                </label>
+                  Make a connection.
+                </h2>
 
-                <input
-                  id="modal-connection-code"
-                  value={connectionCode}
-                  onChange={(event) =>
-                    setConnectionCode(event.target.value.toUpperCase())
-                  }
-                  placeholder="paste_connection_code"
-                  autoComplete="off"
-                  maxLength={32}
-                  required
-                  autoFocus
-                  className="h-14.75 w-full rounded-none border border-[#536078] bg-[#0A1220] px-5 font-mono 
-                  text-sm tracking-wide text-[#E8E0D5] outline-none placeholder:font-sans placeholder:text-[#746D64]
-                   focus:border-[#B42335]"
-                />
+                <p className="mt-3 text-xs leading-5 text-[#B7ADA0] sm:text-[13px]">
+                  Start a new connection or enter a code someone shared with
+                  you.
+                </p>
+
+                <div className="mt-8 space-y-3">
+                  <button
+                    type="button"
+                    onClick={openImportModal}
+                    className="flex min-h-[68px] w-full items-center justify-between gap-4 border border-[#536078] px-4 py-3 text-left text-sm text-[#E8E0D5] transition-colors hover:border-[#B42335] hover:text-[#D45B69]"
+                  >
+                    <span>
+                      <span className="block font-medium">
+                        Import connection code
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#B7ADA0]">
+                        Connect using a code you received
+                      </span>
+                    </span>
+
+                    <Icon name="plus" />
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={handleCreateCode}
+                    className="flex min-h-[68px] w-full items-center justify-between gap-4 border border-[#B42335] px-4 py-3 text-left text-sm text-[#D45B69] transition-colors hover:bg-[#B42335]/10 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <span>
+                      <span className="block font-medium">
+                        {busy
+                          ? "Generating code..."
+                          : "Generate connection code"}
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#B7ADA0]">
+                        Create a code to share with someone
+                      </span>
+                    </span>
+
+                    <Icon name="copy" />
+                  </button>
+                </div>
 
                 {error && (
-                  <p role="alert" className="mt-3 text-xs text-[#D45B69]">
+                  <p role="alert" className="mt-4 text-xs text-[#D45B69]">
                     {error}
                   </p>
                 )}
 
-                <div className="mt-6.5 grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={closeModal}
-                    className="h-14.75 border border-[#536078] bg-transparent text-xs font-medium text-[#B7ADA0] 
-                    hover:border-[#B7ADA0] hover:text-[#E8E0D5] disabled:opacity-50"
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="submit"
-                    disabled={busy || !connectionCode.trim()}
-                    className="h-14.75 border border-[#B42335] bg-transparent text-xs font-semibold text-[#D45B69]
-                     hover:bg-[#B42335]/10 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {busy ? "Connecting..." : "Connect"}
-                  </button>
-                </div>
-              </form>
+                <button
+                  type="button"
+                  onClick={closeModals}
+                  disabled={busy}
+                  className="mt-6 h-11 w-full border border-[#536078] text-xs font-medium text-[#B7ADA0] hover:border-[#B7ADA0] hover:text-[#E8E0D5] disabled:opacity-40"
+                >
+                  Cancel
+                </button>
+              </>
             )}
 
-            {/* Generated code */}
+            {/* Import connection code */}
+            {showJoinForm && (
+              <>
+                <h2
+                  id="connection-modal-title"
+                  className="text-[27px] font-semibold leading-tight tracking-[-1.2px] text-[#E8E0D5] sm:text-[32px]"
+                >
+                  Connect with someone.
+                </h2>
+
+                <p className="mt-3 text-xs leading-5 text-[#B7ADA0] sm:text-[13px]">
+                  Enter the temporary connection code shared with you.
+                </p>
+
+                <form onSubmit={handleJoin} className="mt-8">
+                  <label
+                    htmlFor="modal-connection-code"
+                    className="mb-3 block text-[9px] font-semibold uppercase tracking-[1.8px] text-[#B7ADA0]"
+                  >
+                    Connection code
+                  </label>
+
+                  <input
+                    id="modal-connection-code"
+                    value={connectionCode}
+                    onChange={(event) =>
+                      setConnectionCode(event.target.value.toUpperCase())
+                    }
+                    placeholder="Paste connection code"
+                    autoComplete="off"
+                    maxLength={32}
+                    required
+                    autoFocus
+                    className="h-[59px] w-full rounded-none border border-[#536078] bg-[#0A1220] px-5 font-mono text-sm
+                     tracking-wide text-[#E8E0D5] outline-none placeholder:font-sans placeholder:text-[#746D64]
+                      focus:border-[#B42335]"
+                  />
+
+                  {error && (
+                    <p role="alert" className="mt-3 text-xs text-[#D45B69]">
+                      {error}
+                    </p>
+                  )}
+
+                  <div className="mt-6 grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => {
+                        setShowJoinForm(false);
+                        setShowConnectionOptions(true);
+                        setConnectionCode("");
+                        setError("");
+                      }}
+                      className="h-13.5 border border-[#536078] bg-transparent text-xs font-medium text-[#B7ADA0]
+                       hover:border-[#B7ADA0] hover:text-[#E8E0D5] disabled:opacity-50"
+                    >
+                      Back
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={busy || !connectionCode.trim()}
+                      className="h-13.5 border border-[#B42335] bg-transparent text-xs font-semibold text-[#D45B69]
+                       hover:bg-[#B42335]/10 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {busy ? "Connecting..." : "Connect"}
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
+
+            {/* Generated connection code */}
             {showGeneratedCode && (
-              <div className="mt-10">
-                <label
-                  htmlFor="generated-connection-code"
-                  className="mb-5 block text-[9px] font-semibold uppercase tracking-[1.8px] text-[#B7ADA0]"
+              <>
+                <h2
+                  id="connection-modal-title"
+                  className="text-[27px] font-semibold leading-tight tracking-[-1.2px] text-[#E8E0D5] sm:text-[32px]"
                 >
-                  Your connection code
-                </label>
+                  Share your connection code.
+                </h2>
 
-                <div
-                  id="generated-connection-code"
-                  className="flex min-h-14.75 items-center break-all border border-[#536078] bg-[#0A1220] px-5 py-4 
-                  font-mono text-sm tracking-wider text-[#E8E0D5]"
-                >
-                  {generatedCode}
-                </div>
+                <p className="mt-3 text-xs leading-5 text-[#B7ADA0] sm:text-[13px]">
+                  Share this code with the person you want to connect with.
+                </p>
 
-                {error && (
-                  <p role="alert" className="mt-3 text-xs text-[#D45B69]">
-                    {error}
-                  </p>
-                )}
-
-                <div className="mt-6.5 grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="h-14.75 border border-[#536078] text-xs font-medium text-[#B7ADA0] hover:border-[#B7ADA0]
-                     hover:text-[#E8E0D5]"
+                <div className="mt-8">
+                  <label
+                    htmlFor="generated-connection-code"
+                    className="mb-3 block text-[9px] font-semibold uppercase tracking-[1.8px] text-[#B7ADA0]"
                   >
-                    Close
-                  </button>
+                    Your connection code
+                  </label>
 
-                  <button
-                    type="button"
-                    onClick={handleCopyCode}
-                    className="h-14.75 border border-[#B42335] text-xs font-semibold text-[#D45B69] hover:bg-[#B42335]/10"
+                  <div
+                    id="generated-connection-code"
+                    className="flex min-h-14.75 items-center break-all border border-[#536078] bg-[#0A1220] px-5 py-4 font-mono
+                     text-sm tracking-wider text-[#E8E0D5] select-all"
                   >
-                    Copy code
-                  </button>
+                    {generatedCode}
+                  </div>
+
+                  {error && (
+                    <p role="alert" className="mt-3 text-xs text-[#D45B69]">
+                      {error}
+                    </p>
+                  )}
+
+                  <div className="mt-6 grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowGeneratedCode(false);
+                        setShowConnectionOptions(true);
+                        setError("");
+                      }}
+                      className="h-13.5 border border-[#536078] text-xs font-medium text-[#B7ADA0] hover:border-[#B7ADA0]
+                       hover:text-[#E8E0D5]"
+                    >
+                      Back
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleCopyCode}
+                      className="h-13.5 border border-[#B42335] text-xs font-semibold text-[#D45B69] hover:bg-[#B42335]/10"
+                    >
+                      Copy code
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </section>
         </div>
