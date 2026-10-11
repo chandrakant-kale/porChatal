@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 const C = {
-  navy: "#101B2D",
+  navy: "#05080d",
   deep: "#0A1220",
   panel: "#18263A",
   stone: "#B7ADA0",
@@ -123,7 +123,7 @@ function OutlineButton({
   );
 }
 
-export default function Chat({
+export default function ChatHome({
   conversations = [],
   messages = [],
   currentUser = null,
