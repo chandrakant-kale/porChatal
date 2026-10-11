@@ -337,7 +337,7 @@ export default function Chat({
 
   return (
     <div
-      className="flex h-dvh min-h-[480px] overflow-hidden font-sans antialiased"
+      className="flex h-dvh min-h-120 overflow-hidden font-sans antialiased"
       style={{ background: C.navy, color: C.light }}
     >
       {/* Mobile sidebar overlay */}
@@ -354,10 +354,11 @@ export default function Chat({
       {sidebarOpen && (
         <aside
           className={`${mobileSidebarOpen ? "flex" : "hidden"
-            } fixed inset-y-0 left-0 z-40 w-[280px] flex-col border-r border-[#958B80] bg-[#B7ADA0] text-[#101B2D] md:relative md:flex`}
+            } fixed inset-y-0 left-0 z-40 w-70 flex-col border-r border-[#958B80] bg-[#B7ADA0] text-[#101B2D]
+             md:relative md:flex`}
         >
           {/* Brand */}
-          <div className="flex h-[68px] shrink-0 items-center justify-between border-b border-[#9D9387] px-5">
+          <div className="flex h-17 shrink-0 items-center justify-between border-b border-[#9D9387] px-5">
             <a href="/" className="flex items-center gap-2">
               <BrandMark />
               <span className="text-base font-semibold tracking-[-0.6px]">
@@ -380,7 +381,9 @@ export default function Chat({
             <button
               type="button"
               onClick={openConnectionOptions}
-              className="flex min-h-10 w-full items-center justify-center gap-2 border border-[#536078] px-3 text-sm text-[#101B2D] transition-colors hover:border-[#B42335] hover:text-[#B42335] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B42335]"
+              className="flex min-h-10 w-full items-center justify-center gap-2 border border-[#536078] px-3 text-sm
+               text-[#101B2D] transition-colors hover:border-[#B42335] hover:text-[#B42335] focus-visible:outline-none
+                focus-visible:ring-1 focus-visible:ring-[#B42335]"
             >
               <Icon name="plus" size={16} />
               Connect
@@ -424,7 +427,8 @@ export default function Chat({
                     <button
                       type="button"
                       onClick={() => selectChat(chat)}
-                      className="flex min-w-0 flex-1 items-center gap-3 px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[#B42335]"
+                      className="flex min-w-0 flex-1 items-center gap-3 px-3 py-3 text-left focus-visible:outline-none 
+                      focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[#B42335]"
                     >
                       <Avatar
                         name={chat.name || chat.username || "User"}
@@ -449,7 +453,8 @@ export default function Chat({
                         title="Remove connection"
                         disabled={busy}
                         onClick={() => handleDelete(chat)}
-                        className="mr-1 p-2 text-[#625A51] hover:text-[#B42335] disabled:opacity-40 sm:opacity-0 sm:group-hover:opacity-100"
+                        className="mr-1 p-2 text-[#625A51] hover:text-[#B42335] disabled:opacity-40 sm:opacity-0 
+                        sm:group-hover:opacity-100"
                       >
                         <Icon name="trash" size={15} />
                       </button>
@@ -487,12 +492,13 @@ export default function Chat({
       {/* Main workspace */}
       <main className="flex min-w-0 flex-1 flex-col">
         {/* Header */}
-        <header className="flex min-h-[68px] shrink-0 items-center gap-3 border-b border-[#344155] px-4 py-3 sm:px-6">
+        <header className="flex min-h-17 shrink-0 items-center gap-3 border-b border-[#344155] px-4 py-3 sm:px-6">
           <button
             type="button"
             aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"}
             onClick={toggleSidebar}
-            className="p-2 text-[#B7ADA0] hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B42335]"
+            className="p-2 text-[#B7ADA0] hover:text-white focus-visible:outline-none focus-visible:ring-1 
+            focus-visible:ring-[#B42335]"
           >
             <Icon name="menu" />
           </button>
@@ -516,7 +522,8 @@ export default function Chat({
         {error && !modalOpen && (
           <div
             role="alert"
-            className="mx-4 mt-4 flex items-start justify-between gap-3 border border-[#B42335] px-3 py-3 text-xs text-[#E6A1A8] sm:mx-6"
+            className="mx-4 mt-4 flex items-start justify-between gap-3 border border-[#B42335] px-3 py-3 text-xs 
+            text-[#E6A1A8] sm:mx-6"
           >
             <span>{error}</span>
 
@@ -534,7 +541,7 @@ export default function Chat({
         {/* Empty state */}
         {!activeChat ? (
           <section className="flex flex-1 items-center justify-center overflow-y-auto px-6 py-12">
-            <div className="w-full max-w-[460px]">
+            <div className="w-full max-w-115">
               <div className="mb-8 flex items-center gap-4">
                 <BrandMark />
                 <div className="h-px flex-1 bg-[#344155]" />
@@ -548,7 +555,7 @@ export default function Chat({
                 No conversation selected
               </h2>
 
-              <p className="mt-5 max-w-[370px] text-sm leading-7 text-[#B7ADA0]">
+              <p className="mt-5 max-w-92.5 text-sm leading-7 text-[#B7ADA0]">
                 Select a conversation from the sidebar or connect with
                 someone using a connection code.
               </p>
@@ -557,7 +564,8 @@ export default function Chat({
                 <button
                   type="button"
                   onClick={openConnectionOptions}
-                  className="inline-flex min-h-11 items-center gap-2 border border-[#B42335] px-4 text-sm text-[#D45B69] transition-colors hover:bg-[#B42335]/10"
+                  className="inline-flex min-h-11 items-center gap-2 border border-[#B42335] px-4 text-sm text-[#D45B69]
+                   transition-colors hover:bg-[#B42335]/10"
                 >
                   <Icon name="plus" size={16} />
                   Connect
@@ -623,7 +631,7 @@ export default function Chat({
                                 : "border-[#344155] bg-[#101B2D]"
                               }`}
                           >
-                            <p className="whitespace-pre-wrap break-words text-sm leading-6 text-[#E8E0D5]">
+                            <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6 text-[#E8E0D5]">
                               {message.text || message.content || ""}
                             </p>
 
@@ -670,14 +678,17 @@ export default function Chat({
                   aria-label="Write a message"
                   maxLength={5000}
                   rows={1}
-                  className="min-h-11 max-h-36 min-w-0 flex-1 resize-y border border-[#536078] bg-[#0A1220] px-3 py-3 text-sm text-[#E8E0D5] outline-none placeholder:text-[#B7ADA0]/70 focus:border-[#B42335]"
+                  className="min-h-11 max-h-36 min-w-0 flex-1 resize-y border border-[#536078] bg-[#0A1220]
+                   px-3 py-3 text-sm text-[#E8E0D5] outline-none placeholder:text-[#B7ADA0]/70 focus:border-[#B42335]"
                 />
 
                 <button
                   type="submit"
                   aria-label="Send message"
                   disabled={busy || !messageText.trim()}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center border border-[#B42335] text-[#D45B69] transition-colors hover:bg-[#B42335]/10 hover:text-[#E8E0D5] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B42335] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center border border-[#B42335] text-[#D45B69] 
+                  transition-colors hover:bg-[#B42335]/10 hover:text-[#E8E0D5] focus-visible:outline-none
+                   focus-visible:ring-1 focus-visible:ring-[#B42335] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Icon name="send" size={17} />
                 </button>
@@ -701,7 +712,7 @@ export default function Chat({
             role="dialog"
             aria-modal="true"
             aria-labelledby="connection-modal-title"
-            className="w-full max-w-[490px] border border-[#344155] bg-[#101B2D] px-6 py-8 sm:px-9 sm:py-10"
+            className="w-full max-w-122.5 border border-[#344155] bg-[#101B2D] px-6 py-8 sm:px-9 sm:py-10"
           >
             {/* Modal heading */}
             <div className="mb-6 flex items-center justify-between gap-3">
@@ -746,7 +757,8 @@ export default function Chat({
                   <button
                     type="button"
                     onClick={openImportModal}
-                    className="flex min-h-[68px] w-full items-center justify-between gap-4 border border-[#536078] px-4 py-3 text-left text-sm text-[#E8E0D5] transition-colors hover:border-[#B42335] hover:text-[#D45B69]"
+                    className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#536078] px-4 py-3 
+                    text-left text-sm text-[#E8E0D5] transition-colors hover:border-[#B42335] hover:text-[#D45B69]"
                   >
                     <span>
                       <span className="block font-medium">
@@ -764,7 +776,9 @@ export default function Chat({
                     type="button"
                     disabled={busy}
                     onClick={handleCreateCode}
-                    className="flex min-h-[68px] w-full items-center justify-between gap-4 border border-[#B42335] px-4 py-3 text-left text-sm text-[#D45B69] transition-colors hover:bg-[#B42335]/10 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#B42335] px-4
+                     py-3 text-left text-sm text-[#D45B69] transition-colors hover:bg-[#B42335]/10 disabled:cursor-not-allowed
+                      disabled:opacity-40"
                   >
                     <span>
                       <span className="block font-medium">
@@ -791,7 +805,8 @@ export default function Chat({
                   type="button"
                   onClick={closeModals}
                   disabled={busy}
-                  className="mt-6 h-11 w-full border border-[#536078] text-xs font-medium text-[#B7ADA0] hover:border-[#B7ADA0] hover:text-[#E8E0D5] disabled:opacity-40"
+                  className="mt-6 h-11 w-full border border-[#536078] text-xs font-medium text-[#B7ADA0] 
+                  hover:border-[#B7ADA0] hover:text-[#E8E0D5] disabled:opacity-40"
                 >
                   Cancel
                 </button>
@@ -831,7 +846,7 @@ export default function Chat({
                     maxLength={32}
                     required
                     autoFocus
-                    className="h-[59px] w-full rounded-none border border-[#536078] bg-[#0A1220] px-5 font-mono text-sm
+                    className="h-14.75 w-full rounded-none border border-[#536078] bg-[#0A1220] px-5 font-mono text-sm
                      tracking-wide text-[#E8E0D5] outline-none placeholder:font-sans placeholder:text-[#746D64]
                       focus:border-[#B42335]"
                   />
