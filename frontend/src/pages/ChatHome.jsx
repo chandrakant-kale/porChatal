@@ -55,7 +55,7 @@ export default function ChatHome() {
                 className='p-2 text-white/50 text-sm'>Connect</button>
               <button
                 onClick={optionBtn}
-                className='p-2 text-white/50 text-sm'>Disconnect</button>
+                className='p-2 text-sm text-red-500'>Disconnect</button>
             </div>}
         </div>
       </header>
