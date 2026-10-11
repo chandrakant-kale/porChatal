@@ -96,7 +96,8 @@ function Avatar({ name = "User", small = false }) {
 
   return (
     <div
-      className={`flex shrink-0 items-center justify-center border border-[#9A9083] bg-[#C9C0B4] font-semibold text-[#101B2D] ${small ? "h-8 w-8 text-[10px]" : "h-10 w-10 text-xs"
+      className={`flex shrink-0 items-center justify-center border border-[#9A9083] bg-[#C9C0B4] font-semibold 
+        text-[#101B2D] ${small ? "h-8 w-8 text-[10px]" : "h-10 w-10 text-xs"
         }`}
     >
       {initials}
@@ -116,7 +117,9 @@ function OutlineButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex min-h-10 items-center justify-center gap-2 border border-[#536078] px-3 text-sm text-[#E8E0D5] transition-colors hover:border-[#B42335] hover:text-[#D45B69] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B42335] disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
+      className={`inline-flex min-h-10 items-center justify-center gap-2 border border-[#536078] px-3 text-sm
+         text-[#E8E0D5] transition-colors hover:border-[#B42335] hover:text-[#D45B69] focus-visible:outline-none
+          focus-visible:ring-1 focus-visible:ring-[#B42335] disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
     >
       {children}
     </button>
@@ -135,6 +138,11 @@ export default function ChatHome({
   onDeleteConversation,
   loading = false,
 }) {
+
+  const [user, setUser] = useState({});
+
+
+
   const [activeId, setActiveId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -142,14 +150,29 @@ export default function ChatHome({
   const [messageText, setMessageText] = useState("");
   const [connectionCode, setConnectionCode] = useState("");
 
-  const [showConnectionOptions, setShowConnectionOptions] =
-    useState(false);
+  const [showConnectionOptions, setShowConnectionOptions] = useState(false);
   const [showJoinForm, setShowJoinForm] = useState(false);
   const [showGeneratedCode, setShowGeneratedCode] = useState(false);
 
   const [generatedCode, setGeneratedCode] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+
+  const getUser = async()=>{
+    try {
+      const response = await fetch("http://localhost:5000/home",{
+        credentials:"include"
+      })
+      if (!response.ok) {
+        
+      }
+    } catch (error) {
+      
+    }
+  }
+
+
 
   const activeChat = useMemo(
     () =>
@@ -164,9 +187,8 @@ export default function ChatHome({
       activeChat
         ? messages.filter(
           (message) =>
-            String(
-              message.conversationId ?? message.connectionId
-            ) === String(activeChat.id)
+            String(message.conversationId ?? message.connectionId) ===
+            String(activeChat.id)
         )
         : [],
     [messages, activeChat]
@@ -255,7 +277,6 @@ export default function ChatHome({
 
     try {
       await onJoinConversation(code);
-
       setConnectionCode("");
       setShowJoinForm(false);
     } catch (err) {
@@ -354,8 +375,8 @@ export default function ChatHome({
       {sidebarOpen && (
         <aside
           className={`${mobileSidebarOpen ? "flex" : "hidden"
-            } fixed inset-y-0 left-0 z-40 w-70 flex-col border-r border-[#958B80] bg-[#B7ADA0] text-[#101B2D]
-             md:relative md:flex`}
+            } fixed inset-y-0 left-0 z-40 w-70 flex-col border-r border-[#958B80] bg-[#B7ADA0] text-[#101B2D] 
+            md:relative md:flex`}
         >
           {/* Brand */}
           <div className="flex h-17 shrink-0 items-center justify-between border-b border-[#9D9387] px-5">
@@ -376,14 +397,12 @@ export default function ChatHome({
             </button>
           </div>
 
-          {/* Single connection button */}
+          {/* Connect button */}
           <div className="shrink-0 border-b border-[#9D9387] p-4">
             <button
               type="button"
               onClick={openConnectionOptions}
-              className="flex min-h-10 w-full items-center justify-center gap-2 border border-[#536078] px-3 text-sm
-               text-[#101B2D] transition-colors hover:border-[#B42335] hover:text-[#B42335] focus-visible:outline-none
-                focus-visible:ring-1 focus-visible:ring-[#B42335]"
+              className="flex min-h-10 w-full items-center justify-center gap-2 border border-[#536078] px-3 text-sm text-[#101B2D] transition-colors hover:border-[#B42335] hover:text-[#B42335] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B42335]"
             >
               <Icon name="plus" size={16} />
               Connect
@@ -427,8 +446,8 @@ export default function ChatHome({
                     <button
                       type="button"
                       onClick={() => selectChat(chat)}
-                      className="flex min-w-0 flex-1 items-center gap-3 px-3 py-3 text-left focus-visible:outline-none 
-                      focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[#B42335]"
+                      className="flex min-w-0 flex-1 items-center gap-3 px-3 py-3 text-left focus-visible:outline-none
+                       focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[#B42335]"
                     >
                       <Avatar
                         name={chat.name || chat.username || "User"}
@@ -637,13 +656,12 @@ export default function ChatHome({
 
                             {message.createdAt && (
                               <p className="mt-2 text-right text-[10px] text-[#B7ADA0]">
-                                {new Date(message.createdAt).toLocaleTimeString(
-                                  [],
-                                  {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }
-                                )}
+                                {new Date(
+                                  message.createdAt
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
                               </p>
                             )}
                           </div>
@@ -678,16 +696,16 @@ export default function ChatHome({
                   aria-label="Write a message"
                   maxLength={5000}
                   rows={1}
-                  className="min-h-11 max-h-36 min-w-0 flex-1 resize-y border border-[#536078] bg-[#0A1220]
-                   px-3 py-3 text-sm text-[#E8E0D5] outline-none placeholder:text-[#B7ADA0]/70 focus:border-[#B42335]"
+                  className="min-h-11 max-h-36 min-w-0 flex-1 resize-y border border-[#536078] bg-[#0A1220] px-3 py-3 
+                  text-sm text-[#E8E0D5] outline-none placeholder:text-[#B7ADA0]/70 focus:border-[#B42335]"
                 />
 
                 <button
                   type="submit"
                   aria-label="Send message"
                   disabled={busy || !messageText.trim()}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center border border-[#B42335] text-[#D45B69] 
-                  transition-colors hover:bg-[#B42335]/10 hover:text-[#E8E0D5] focus-visible:outline-none
+                  className="flex h-11 w-11 shrink-0 items-center justify-center border border-[#B42335] text-[#D45B69]
+                   transition-colors hover:bg-[#B42335]/10 hover:text-[#E8E0D5] focus-visible:outline-none 
                    focus-visible:ring-1 focus-visible:ring-[#B42335] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Icon name="send" size={17} />
@@ -757,8 +775,8 @@ export default function ChatHome({
                   <button
                     type="button"
                     onClick={openImportModal}
-                    className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#536078] px-4 py-3 
-                    text-left text-sm text-[#E8E0D5] transition-colors hover:border-[#B42335] hover:text-[#D45B69]"
+                    className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#536078] px-4 py-3
+                     text-left text-sm text-[#E8E0D5] transition-colors hover:border-[#B42335] hover:text-[#D45B69]"
                   >
                     <span>
                       <span className="block font-medium">
@@ -776,8 +794,8 @@ export default function ChatHome({
                     type="button"
                     disabled={busy}
                     onClick={handleCreateCode}
-                    className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#B42335] px-4
-                     py-3 text-left text-sm text-[#D45B69] transition-colors hover:bg-[#B42335]/10 disabled:cursor-not-allowed
+                    className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#B42335] px-4 py-3
+                     text-left text-sm text-[#D45B69] transition-colors hover:bg-[#B42335]/10 disabled:cursor-not-allowed
                       disabled:opacity-40"
                   >
                     <span>
@@ -805,8 +823,8 @@ export default function ChatHome({
                   type="button"
                   onClick={closeModals}
                   disabled={busy}
-                  className="mt-6 h-11 w-full border border-[#536078] text-xs font-medium text-[#B7ADA0] 
-                  hover:border-[#B7ADA0] hover:text-[#E8E0D5] disabled:opacity-40"
+                  className="mt-6 h-11 w-full border border-[#536078] text-xs font-medium text-[#B7ADA0]
+                   hover:border-[#B7ADA0] hover:text-[#E8E0D5] disabled:opacity-40"
                 >
                   Cancel
                 </button>
@@ -846,9 +864,9 @@ export default function ChatHome({
                     maxLength={32}
                     required
                     autoFocus
-                    className="h-14.75 w-full rounded-none border border-[#536078] bg-[#0A1220] px-5 font-mono text-sm
-                     tracking-wide text-[#E8E0D5] outline-none placeholder:font-sans placeholder:text-[#746D64]
-                      focus:border-[#B42335]"
+                    className="h-14.75 w-full rounded-none border border-[#536078] bg-[#0A1220] px-5 font-mono text-sm 
+                    tracking-wide text-[#E8E0D5] outline-none placeholder:font-sans placeholder:text-[#746D64]
+                     focus:border-[#B42335]"
                   />
 
                   {error && (
@@ -910,8 +928,8 @@ export default function ChatHome({
 
                   <div
                     id="generated-connection-code"
-                    className="flex min-h-14.75 items-center break-all border border-[#536078] bg-[#0A1220] px-5 py-4 font-mono
-                     text-sm tracking-wider text-[#E8E0D5] select-all"
+                    className="flex min-h-14.75 items-center break-all border border-[#536078] bg-[#0A1220] px-5 py-4 
+                    font-mono text-sm tracking-wider text-[#E8E0D5] select-all"
                   >
                     {generatedCode}
                   </div>
@@ -930,8 +948,8 @@ export default function ChatHome({
                         setShowConnectionOptions(true);
                         setError("");
                       }}
-                      className="h-13.5 border border-[#536078] text-xs font-medium text-[#B7ADA0] hover:border-[#B7ADA0]
-                       hover:text-[#E8E0D5]"
+                      className="h-13.5 border border-[#536078] text-xs font-medium text-[#B7ADA0] hover:border-[#B7ADA0] 
+                      hover:text-[#E8E0D5]"
                     >
                       Back
                     </button>
