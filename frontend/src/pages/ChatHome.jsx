@@ -884,7 +884,7 @@ export default function ChatHome({
                       type="button"
                       onClick={openImportModal}
                       className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#536078] px-4 py-3
-                      text-left text-sm text-[#E8E0D5] transition-colors hover:border-[#B42335] hover:text-[#D45B69]"
+                      text-left text-sm text-[#E8E0D5] transition-colors hover:bg-[#B42335]/10 hover:text-[#D45B69]"
                     >
                       <span>
                         <span className="block font-medium">
@@ -902,9 +902,9 @@ export default function ChatHome({
                       type="button"
                       disabled={busy}
                       onClick={getConnectionCode}
-                      className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#B42335] px-4 py-3
-                      text-left text-sm text-[#D45B69] transition-colors hover:bg-[#B42335]/10 disabled:cursor-not-allowed
-                      disabled:opacity-40"
+                      className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#536078] px-4 py-3
+                      text-left text-sm text-[#E8E0D5] transition-colors hover:bg-[#B42335]/10 hover:text-[#D45B69]
+                      disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       <span>
                         <span className="block font-medium">
