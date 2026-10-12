@@ -140,12 +140,16 @@ export default function ChatHome({
   const [user, setUser] = useState(currentUser || {});
   const [connection, setConnection] = useState([]);
 
+
   const [activeId, setActiveId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const [messageText, setMessageText] = useState("");
+
   const [connectionCode, setConnectionCode] = useState("");
+  const [expiresAt, setExpiresAt] = useState("");
+  const [timeLeft, setTimeLeft] = useState(120);
 
   const [showConnectionOptions, setShowConnectionOptions] = useState(false);
   const [showJoinForm, setShowJoinForm] = useState(false);
@@ -190,8 +194,6 @@ export default function ChatHome({
         throw new Error("Invalid connections response");
       }
 
-      // Backend returns user_id and username.
-      // Convert them to the fields used by this UI.
       const formattedConnections = data.connections.map((item) => ({
         ...item,
         id: item.user_id,
@@ -204,6 +206,53 @@ export default function ChatHome({
       setError(error.message || "Cannot get connections");
     }
   };
+
+  const getConnectionCode = async () => {
+    if (busy) return;
+
+    setError("");
+    setBusy(true);
+    try {
+      const response = await fetch("http://localhost:5000/connections/code", {
+        method: "POST",
+        credentials: "include"
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error("Cannot get connection Code");
+      }
+
+      if (!data.code) {
+        throw new Error("Server did not return a connection code");
+
+      }
+      setConnectionCode(data.code)
+      setGeneratedCode(data.code)
+      setExpiresAt(data.expiresAt || "")
+      setTimeLeft(120);
+
+      setShowGeneratedCode(false);
+      setShowJoinForm(false);
+      setShowGeneratedCode(true);
+
+    } catch (error) {
+      console.error("Error getting code:", error);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!showGeneratedCode || timeLeft <= 0) return;
+
+    const timer = setTimeout(() => {
+      setTimeLeft((previous) => Math.max(0, previous - 1));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [showGeneratedCode, timeLeft]);
 
   useEffect(() => {
     getUser();
@@ -287,37 +336,6 @@ export default function ChatHome({
     setShowGeneratedCode(false);
     setConnectionCode("");
     setError("");
-  }
-
-  // GENERATE CONNECTION CODE
-  async function handleCreateCode() {
-    if (busy) return;
-
-    if (!onCreateConnectionCode) {
-      setError("Connection-code generation is not configured.");
-      return;
-    }
-
-    setError("");
-    setBusy(true);
-
-    try {
-      const result = await onCreateConnectionCode();
-      const code = typeof result === "string" ? result : result?.code;
-
-      if (!code) {
-        throw new Error("The server did not return a connection code.");
-      }
-
-      setGeneratedCode(code);
-      setShowConnectionOptions(false);
-      setShowJoinForm(false);
-      setShowGeneratedCode(true);
-    } catch (err) {
-      setError(err.message || "Unable to generate a connection code.");
-    } finally {
-      setBusy(false);
-    }
   }
 
   // JOIN CONNECTION
@@ -845,79 +863,81 @@ export default function ChatHome({
             </div>
 
             {/* Combined Connect menu */}
-            {showConnectionOptions && (
-              <>
-                <h2
-                  id="connection-modal-title"
-                  className="text-[27px] font-semibold leading-tight tracking-[-1.2px] text-[#E8E0D5] sm:text-[32px]"
-                >
-                  Make a connection.
-                </h2>
-
-                <p className="mt-3 text-xs leading-5 text-[#B7ADA0] sm:text-[13px]">
-                  Start a new connection or enter a code someone shared with
-                  you.
-                </p>
-
-                <div className="mt-8 space-y-3">
-                  <button
-                    type="button"
-                    onClick={openImportModal}
-                    className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#536078] px-4 py-3
-                      text-left text-sm text-[#E8E0D5] transition-colors hover:border-[#B42335] hover:text-[#D45B69]"
+            {showConnectionOptions &&
+              !showGeneratedCode &&
+              !showJoinForm && (
+                <>
+                  <h2
+                    id="connection-modal-title"
+                    className="text-[27px] font-semibold leading-tight tracking-[-1.2px] text-[#E8E0D5] sm:text-[32px]"
                   >
-                    <span>
-                      <span className="block font-medium">
-                        Import connection code
-                      </span>
-                      <span className="mt-1 block text-xs leading-5 text-[#B7ADA0]">
-                        Connect using a code you received
-                      </span>
-                    </span>
+                    Make a connection.
+                  </h2>
 
-                    <Icon name="plus" />
-                  </button>
+                  <p className="mt-3 text-xs leading-5 text-[#B7ADA0] sm:text-[13px]">
+                    Start a new connection or enter a code someone shared with
+                    you.
+                  </p>
 
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={handleCreateCode}
-                    className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#B42335] px-4 py-3
+                  <div className="mt-8 space-y-3">
+                    <button
+                      type="button"
+                      onClick={openImportModal}
+                      className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#536078] px-4 py-3
+                      text-left text-sm text-[#E8E0D5] transition-colors hover:border-[#B42335] hover:text-[#D45B69]"
+                    >
+                      <span>
+                        <span className="block font-medium">
+                          Import connection code
+                        </span>
+                        <span className="mt-1 block text-xs leading-5 text-[#B7ADA0]">
+                          Connect using a code you received
+                        </span>
+                      </span>
+
+                      <Icon name="plus" />
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={getConnectionCode}
+                      className="flex min-h-17 w-full items-center justify-between gap-4 border border-[#B42335] px-4 py-3
                       text-left text-sm text-[#D45B69] transition-colors hover:bg-[#B42335]/10 disabled:cursor-not-allowed
                       disabled:opacity-40"
-                  >
-                    <span>
-                      <span className="block font-medium">
-                        {busy
-                          ? "Generating code..."
-                          : "Generate connection code"}
+                    >
+                      <span>
+                        <span className="block font-medium">
+                          {busy
+                            ? "Generating code..."
+                            : "Generate connection code"}
+                        </span>
+                        <span className="mt-1 block text-xs leading-5 text-[#B7ADA0]">
+                          Create a code to share with someone
+                        </span>
                       </span>
-                      <span className="mt-1 block text-xs leading-5 text-[#B7ADA0]">
-                        Create a code to share with someone
-                      </span>
-                    </span>
 
-                    <Icon name="copy" />
-                  </button>
-                </div>
+                      <Icon name="copy" />
+                    </button>
+                  </div>
 
-                {error && (
-                  <p role="alert" className="mt-4 text-xs text-[#D45B69]">
-                    {error}
-                  </p>
-                )}
+                  {error && (
+                    <p role="alert" className="mt-4 text-xs text-[#D45B69]">
+                      {error}
+                    </p>
+                  )}
 
-                <button
-                  type="button"
-                  onClick={closeModals}
-                  disabled={busy}
-                  className="mt-6 h-11 w-full border border-[#536078] text-xs font-medium text-[#B7ADA0]
+                  <button
+                    type="button"
+                    onClick={closeModals}
+                    disabled={busy}
+                    className="mt-6 h-11 w-full border border-[#536078] text-xs font-medium text-[#B7ADA0]
                     hover:border-[#B7ADA0] hover:text-[#E8E0D5] disabled:opacity-40"
-                >
-                  Cancel
-                </button>
-              </>
-            )}
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
 
             {/* Import connection code */}
             {showJoinForm && (
@@ -1021,11 +1041,17 @@ export default function ChatHome({
                     className="flex min-h-14.75 items-center break-all border border-[#536078] bg-[#0A1220] px-5 py-4
                       font-mono text-sm tracking-wider text-[#E8E0D5] select-all"
                   >
-                    {generatedCode}
+                    {connectionCode}
                   </div>
 
-                  <p className="mt-3 text-xs leading-5 text-[#B7ADA0]">
-                    This code expires in 3 minutes and can only be used once.
+                  <p
+                    className={`mt-3 text-xs leading-5 ${timeLeft === 0 ? "text-[#D45B69]" : "text-[#B7ADA0]"
+                      }`}
+                  >
+                    {timeLeft === 0
+                      ? "This code has expired. Generate a new one."
+                      : `Code expires in ${String(Math.floor(timeLeft / 60)).padStart(2, "0")}
+                      :${String(timeLeft % 60).padStart(2, "0")} and can only be used once.`}
                   </p>
 
                   {error && (
