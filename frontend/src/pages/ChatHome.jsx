@@ -481,7 +481,7 @@ export default function ChatHome({
             <a href="/" className="flex items-center gap-2">
               <BrandMark />
               <span className="text-base font-semibold tracking-[-0.6px]">
-                por<span style={{ color: C.red }}>chatal</span>
+                por<span style={{ color: C.red }}>chat</span>al
               </span>
             </a>
 
