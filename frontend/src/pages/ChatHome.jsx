@@ -243,7 +243,6 @@ export default function ChatHome({
   }
 
   const deleteConnection = async (chat) => {
-    console.log("Selected chat:", chat);
 
     const currentUserId = user?.id ?? user?.user_id;
 
@@ -252,8 +251,6 @@ export default function ChatHome({
         ? chat.user_b
         : chat.user_a;
 
-        console.log(String(otherUserId));
-        
     if (!otherUserId) {
       console.error("Missing other user's ID:", chat);
       setError("Cannot delete connection: user ID is missing.");
@@ -287,8 +284,8 @@ export default function ChatHome({
       }
 
       setError("");
-      console.log(data);
       return true;
+
     } catch (error) {
       console.error("Cannot delete the connection:", error);
       setError(error.message || "Failed to delete connection");

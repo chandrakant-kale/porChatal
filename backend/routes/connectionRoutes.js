@@ -18,6 +18,6 @@ router.post("/join", homeAuthMiddlweare, joinConnection);
 
 router.get("/", homeAuthMiddlweare, getConnections);
 
-router.delete("/:connectionId", homeAuthMiddlweare, deleteConnection);
+router.delete("/:userId", homeAuthMiddlweare, deleteConnection);
 
 module.exports = router;
