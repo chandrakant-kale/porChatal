@@ -446,6 +446,8 @@ export default function ChatHome({
     }
   }
 
+  
+
   // SEND MESSAGE
   async function handleSend(event) {
     event.preventDefault();
