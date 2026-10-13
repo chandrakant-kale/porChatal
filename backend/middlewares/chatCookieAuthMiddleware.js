@@ -17,7 +17,6 @@ const cookieAuth = async (req, res, next) => {
         )
         
         req.chat = verified.userId;
-        
 
         next();
 

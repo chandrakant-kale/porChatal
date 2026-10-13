@@ -133,7 +133,6 @@ export default function ChatHome({
   onSendMessage,
   onJoinConversation,
   onLogout,
-  onCreateConnectionCode,
   onDeleteConversation,
   loading = false,
 }) {
@@ -148,7 +147,6 @@ export default function ChatHome({
   const [messageText, setMessageText] = useState("");
 
   const [connectionCode, setConnectionCode] = useState("");
-  const [expiresAt, setExpiresAt] = useState("");
   const [timeLeft, setTimeLeft] = useState(120);
 
   const [showConnectionOptions, setShowConnectionOptions] = useState(false);
@@ -201,6 +199,7 @@ export default function ChatHome({
       }));
 
       setConnection(formattedConnections);
+
     } catch (error) {
       console.error("Error getting connections:", error);
       setError(error.message || "Cannot get connections");
@@ -230,7 +229,6 @@ export default function ChatHome({
       }
       setConnectionCode(data.code)
       setGeneratedCode(data.code)
-      setExpiresAt(data.expiresAt || "")
       setTimeLeft(120);
 
       setShowGeneratedCode(false);
@@ -243,6 +241,60 @@ export default function ChatHome({
       setBusy(false);
     }
   }
+
+  const deleteConnection = async (chat) => {
+    console.log("Selected chat:", chat);
+
+    const currentUserId = user?.id ?? user?.user_id;
+
+    const otherUserId =
+      String(chat.user_a) === String(currentUserId)
+        ? chat.user_b
+        : chat.user_a;
+
+        console.log(String(otherUserId));
+        
+    if (!otherUserId) {
+      console.error("Missing other user's ID:", chat);
+      setError("Cannot delete connection: user ID is missing.");
+      return false;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/connections/${otherUserId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete connection");
+      }
+
+      setConnection((previous) =>
+        previous.filter(
+          (item) => String(item.id ?? item.user_id) !== String(otherUserId)
+        )
+      );
+
+      if (String(activeId) === String(otherUserId)) {
+        setActiveId(null);
+        setMessageText("");
+      }
+
+      setError("");
+      console.log(data);
+      return true;
+    } catch (error) {
+      console.error("Cannot delete the connection:", error);
+      setError(error.message || "Failed to delete connection");
+      return false;
+    }
+  };
 
   useEffect(() => {
     if (!showGeneratedCode || timeLeft <= 0) return;
@@ -414,31 +466,6 @@ export default function ChatHome({
     }
   }
 
-  // DELETE CONNECTION
-  async function handleDelete(chat) {
-    if (!onDeleteConversation || busy) return;
-
-    setError("");
-    setBusy(true);
-
-    try {
-      // chat.id is normalized from the backend's user_id.
-      await onDeleteConversation(chat.id);
-
-      setConnection((previous) =>
-        previous.filter((item) => String(item.id) !== String(chat.id))
-      );
-
-      if (String(activeId) === String(chat.id)) {
-        setActiveId(null);
-        setMessageText("");
-      }
-    } catch (err) {
-      setError(err.message || "Unable to remove this connection.");
-    } finally {
-      setBusy(false);
-    }
-  }
 
   function toggleSidebar() {
     if (typeof window !== "undefined" && window.innerWidth < 768) {
@@ -550,13 +577,13 @@ export default function ChatHome({
                         focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[#B42335]"
                     >
                       <Avatar
-                        name={chat.name || chat.username || "User"}
+                        name={chat?.username}
                         small
                       />
 
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[13px] font-medium">
-                          {chat.name || chat.username || "Unknown user"}
+                          {chat?.username}
                         </span>
 
                         <span className="mt-1 block truncate text-xs text-[#625A51]">
@@ -565,19 +592,18 @@ export default function ChatHome({
                       </span>
                     </button>
 
-                    {onDeleteConversation && (
-                      <button
-                        type="button"
-                        aria-label="Remove connection"
-                        title="Remove connection"
-                        disabled={busy}
-                        onClick={() => handleDelete(chat)}
-                        className="mr-1 p-2 text-[#625A51] hover:text-[#B42335] disabled:opacity-40 sm:opacity-0
+                    <button
+                      type="button"
+                      aria-label="Remove connection"
+                      title="Remove connection"
+                      disabled={busy}
+                      onClick={() => { deleteConnection(chat) }}
+                      className="mr-1 p-2 text-[#625A51] hover:text-[#B42335] disabled:opacity-40 sm:opacity-0
                           sm:group-hover:opacity-100"
-                      >
-                        <Icon name="trash" size={15} />
-                      </button>
-                    )}
+                    >
+                      <Icon name="trash" size={15} />
+                    </button>
+
                   </div>
                 );
               })

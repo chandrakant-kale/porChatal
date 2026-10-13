@@ -262,6 +262,16 @@ const deleteConnection = async (req, res) => {
     try {
         const currentUserId = req.chat;
         const otherUserId = req.params.userId;
+        console.log("current",currentUserId);
+        console.log("other",otherUserId);
+        
+
+        if (!currentUserId || !otherUserId) {
+            return res.status(400).json({
+                success: false,
+                message: "User ID is missing"
+            });
+        }
 
         if (currentUserId === otherUserId) {
             return res.status(400).json({
@@ -285,7 +295,7 @@ const deleteConnection = async (req, res) => {
             [userA, userB]
         );
 
-        if (result.rows.length === 0) {
+        if (result.rowCount === 0) {
             return res.status(404).json({
                 success: false,
                 message: "Connection not found"
@@ -298,11 +308,7 @@ const deleteConnection = async (req, res) => {
         });
 
     } catch (error) {
-
-        console.error(
-            "Delete connection error:",
-            error
-        );
+        console.error("Delete connection error:", error);
 
         return res.status(500).json({
             success: false,
