@@ -261,8 +261,7 @@ const getConnections = async (req, res) => {
 const deleteConnection = async (req, res) => {
     try {
         const currentUserId = req.chat;
-        const otherUserId = req.params.userId;
-        
+        const otherUserId = req.params.userId;      
 
         if (!currentUserId || !otherUserId) {
             return res.status(400).json({

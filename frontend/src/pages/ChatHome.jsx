@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import {useNavigate} from "react-router-dom";
+
 
 const C = {
   navy: "#05080d",
@@ -131,9 +133,6 @@ export default function ChatHome({
   currentUser = null,
   onSelectConversation,
   onSendMessage,
-  onJoinConversation,
-  onLogout,
-  onDeleteConversation,
   loading = false,
 }) {
   const [user, setUser] = useState(currentUser || {});
@@ -156,6 +155,8 @@ export default function ChatHome({
   const [generatedCode, setGeneratedCode] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const navigate = useNavigate();
 
   // GET USER
   const getUser = async () => {
@@ -243,16 +244,9 @@ export default function ChatHome({
   }
 
   const deleteConnection = async (chat) => {
-
-    const currentUserId = user?.id ?? user?.user_id;
-
-    const otherUserId =
-      String(chat.user_a) === String(currentUserId)
-        ? chat.user_b
-        : chat.user_a;
+    const otherUserId = chat?.user_id ?? chat?.id;
 
     if (!otherUserId) {
-      console.error("Missing other user's ID:", chat);
       setError("Cannot delete connection: user ID is missing.");
       return false;
     }
@@ -285,13 +279,69 @@ export default function ChatHome({
 
       setError("");
       return true;
-
     } catch (error) {
       console.error("Cannot delete the connection:", error);
       setError(error.message || "Failed to delete connection");
       return false;
     }
   };
+
+  const joinConnection = async (e) => {
+    const code = connectionCode;
+
+    if (!code) {
+      setError("Please enter a connection code");
+      return false;
+    }
+
+    try {
+      e.preventDefault();
+
+      const responce = await fetch(`http://localhost:5000/connections/join`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ code }),
+        credentials: "include"
+      })
+      const data = await responce.json();
+      if (!responce.ok) {
+        throw new Error(data.message || "Failed to connect");
+      }
+      console.log(data);
+
+      setError("");
+      return true;
+
+    } catch (error) {
+      console.error("error occured : ", error);
+      setError(error.message || "failed to connect")
+    }
+  }
+
+  const userLogout = async () => {
+    try {
+      const responce = await fetch("http://localhost:5000/logout", {
+        method: "POST",
+        credentials: "include"
+      })
+      const data = await responce.json();
+
+      if (!responce.ok) {
+        throw new Error(data.message || "Cannot Log out");
+      }
+      console.log(data);
+
+      navigate("/login",{replace:true});
+
+    } catch (error) {
+      console.error("Error occurred during logout:", error);
+    setError(error.message || "Cannot log out");
+    }
+  }
+
+
 
   useEffect(() => {
     if (!showGeneratedCode || timeLeft <= 0) return;
@@ -385,43 +435,6 @@ export default function ChatHome({
     setShowGeneratedCode(false);
     setConnectionCode("");
     setError("");
-  }
-
-  // JOIN CONNECTION
-  async function handleJoin(event) {
-    event.preventDefault();
-
-    const code = connectionCode.trim().toUpperCase();
-
-    if (!code || busy) return;
-
-    if (code.length !== 6) {
-      setError("Enter a valid 6-character connection code.");
-      return;
-    }
-
-    if (!onJoinConversation) {
-      setError("Connection joining is not configured.");
-      return;
-    }
-
-    setError("");
-    setBusy(true);
-
-    try {
-      await onJoinConversation(code);
-
-      setConnectionCode("");
-      setShowJoinForm(false);
-      setShowConnectionOptions(false);
-
-      // Refresh the list after joining.
-      await getUserConnection();
-    } catch (err) {
-      setError(err.message || "Unable to import the connection code.");
-    } finally {
-      setBusy(false);
-    }
   }
 
   // COPY CODE
@@ -624,8 +637,9 @@ export default function ChatHome({
               type="button"
               aria-label="Log out"
               title="Log out"
-              onClick={onLogout}
+              onClick={userLogout}
               className="p-2 text-[#514A42] hover:text-[#B42335]"
+              
             >
               <Icon name="logout" size={17} />
             </button>
@@ -976,7 +990,7 @@ export default function ChatHome({
                   Enter the temporary connection code shared with you.
                 </p>
 
-                <form onSubmit={handleJoin} className="mt-8">
+                <form onSubmit={joinConnection} className="mt-8">
                   <label
                     htmlFor="modal-connection-code"
                     className="mb-3 block text-[9px] font-semibold uppercase tracking-[1.8px] text-[#B7ADA0]"
