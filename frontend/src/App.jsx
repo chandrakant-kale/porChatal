@@ -12,7 +12,7 @@ import io from "socket.io-client";
 function App() {
 
   const [socket, setSocket] = useState(null);
-  const [message, setMessage] = useState([]);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     const newSocket = io("http://localhost:5000", {
@@ -30,7 +30,7 @@ function App() {
 
     newSocket.on("message:new", (message) => {
       console.log("new message recived : ", message);
-      setMessage((previous) => [...previous, message]);
+      setMessages((previous) => [...previous, message]);
     })
     return () => {
       newSocket.disconnect();
@@ -54,11 +54,11 @@ function App() {
             reject(new Error(response?.message || "failed to send message"));
             return;
           }
-          setMessage((previous) => [
+          setMessages((previous) => [
             ...previous,
             response.message])
 
-            resolve(response.message);
+          resolve(response.message);
         }
       )
     })
@@ -69,10 +69,14 @@ function App() {
       <Routes>
         <Route path="/" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/home/chat" element={<ChatHome
-        messages={message}
-        onSendMessage={handleSendMessage}
-        socket={socket} />} />
+        <Route
+          path="/home/chat"
+          element={
+            <ChatHome
+              messages={messages}
+              onSendMessage={handleSendMessage}
+              socket={socket}
+            />} />
       </Routes>
     </>
   )

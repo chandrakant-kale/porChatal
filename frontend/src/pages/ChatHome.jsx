@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 const C = {
@@ -134,6 +134,7 @@ export default function ChatHome({
   onSelectConversation,
   onSendMessage,
   loading = false,
+  socket,
 }) {
   const [user, setUser] = useState(currentUser || {});
   const [connection, setConnection] = useState([]);
@@ -206,6 +207,7 @@ export default function ChatHome({
       setError(error.message || "Cannot get connections");
     }
   };
+
 
   const getConnectionCode = async () => {
     if (busy) return;
@@ -333,11 +335,11 @@ export default function ChatHome({
       }
       console.log(data);
 
-      navigate("/login",{replace:true});
+      navigate("/login", { replace: true });
 
     } catch (error) {
       console.error("Error occurred during logout:", error);
-    setError(error.message || "Cannot log out");
+      setError(error.message || "Cannot log out");
     }
   }
 
@@ -407,7 +409,18 @@ export default function ChatHome({
     setError("");
     setMobileSidebarOpen(false);
     setMessageText("");
-
+    if (socket?.connected) {
+      socket.emit(
+        "conversation",
+        { otherUserId: chat.id },
+        (responce) => {
+          if (!responce?.success) {
+            setError(responce?.message || "could not join the conversation")
+          }
+        }
+      )
+    }
+    setMobileSidebarOpen(false);
     onSelectConversation?.(chat);
   }
 
@@ -446,7 +459,7 @@ export default function ChatHome({
     }
   }
 
-  
+
 
   // SEND MESSAGE
   async function handleSend(event) {
@@ -467,7 +480,7 @@ export default function ChatHome({
     try {
       await onSendMessage({
         conversationId: activeChat.id,
-        text,
+        text: messageText.trim(),
       });
 
       setMessageText("");
@@ -641,7 +654,7 @@ export default function ChatHome({
               title="Log out"
               onClick={userLogout}
               className="p-2 text-[#514A42] hover:text-[#B42335]"
-              
+
             >
               <Icon name="logout" size={17} />
             </button>
