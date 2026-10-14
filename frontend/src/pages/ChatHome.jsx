@@ -815,18 +815,10 @@ export default function ChatHome({
                         String(myId) === String(senderId);
 
                       return (
-                        <div
-                          key={
-                            message.id ||
-                            `${message.createdAt || "message"}-${index}`
-                          }
-                          className={`flex ${mine ? "justify-end" : "justify-start"
-                            }`}
-                        >
+                        <div className={`flex w-full ${mine ? "justify-end" : "justify-start"}`}>
                           <div
-                            className={`max-w-[85%] border px-4 py-3 sm:max-w-[70%] ${mine
-                              ? "border-[#536078] bg-[#1A2940]"
-                              : "border-[#344155] bg-[#101B2D]"
+                            className={`max-w-[75%] border border-slate-700 bg-[#111c2e] px-5 py-4 ${mine ? "ml-auto" :
+                              "mr-auto"
                               }`}
                           >
                             <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6 text-[#E8E0D5]">
