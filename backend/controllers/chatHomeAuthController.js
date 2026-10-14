@@ -7,7 +7,7 @@ const chatHome = async (req, res) => {
 
 
         const result = await pool.query(`
-        SELECT username 
+        SELECT id, username 
         FROM users
         WHERE id = $1;`, [id]
         );

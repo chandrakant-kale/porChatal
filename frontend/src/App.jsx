@@ -29,7 +29,6 @@ function App() {
     });
 
     newSocket.on("message:new", (message) => {
-      console.log("new message recived : ", message);
       setMessages((previous) => [...previous, message]);
     })
     return () => {

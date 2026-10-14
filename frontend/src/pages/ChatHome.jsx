@@ -806,19 +806,22 @@ export default function ChatHome({
                         currentUser?.userId ??
                         user?.id ??
                         user?.userId;
-                      const senderId =
-                        message.senderId ?? message.sender_id;
+
+                      const senderId = message.senderId ?? message.sender_id;
 
                       const mine =
                         myId != null &&
                         senderId != null &&
-                        String(myId) === String(senderId);
-
+                        String(myId).toLowerCase() === String(senderId).toLowerCase();
+                      
                       return (
-                        <div className={`flex w-full ${mine ? "justify-end" : "justify-start"}`}>
+                        <div
+                         key={message.id}
+                          className={`flex w-full ${mine ? "justify-end" : "justify-start"
+                            }`}
+                        >
                           <div
-                            className={`max-w-[75%] border border-slate-700 bg-[#111c2e] px-5 py-4 ${mine ? "ml-auto" :
-                              "mr-auto"
+                            className={`max-w-[75%] border border-slate-700 bg-[#111c2e] px-5 py-4 ${mine ? "ml-auto" : "mr-auto"
                               }`}
                           >
                             <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6 text-[#E8E0D5]">

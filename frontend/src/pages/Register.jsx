@@ -50,6 +50,28 @@ function ArrowIcon() {
     </svg>
   );
 }
+function BrandMark() {
+  return (
+    <svg
+      width="36"
+      height="36"
+      viewBox="0 0 40 40"
+      fill="none"
+      aria-hidden="true"
+    >
+      <rect
+        x="5.5"
+        y="8.5"
+        width="28"
+        height="23"
+        stroke={"#B42335"}
+        strokeWidth="1.5"
+      />
+      <path d="M6 15h21M6 19h13" stroke={"#B42335"} strokeWidth="1.5" />
+      <path d="M34 8.5h4" stroke={"#B42335"} strokeWidth="1.5" />
+    </svg>
+  );
+}
 
 function LockIcon() {
   return (
@@ -90,7 +112,7 @@ export default function Register() {
   /* =========================================================
      PASSWORD STRENGTH
   ========================================================= */
- 
+
   const passwordStrength = useMemo(() => {
     if (!password) return 0;
 
@@ -291,7 +313,7 @@ export default function Register() {
             ================================================= */}
 
             <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/35 to-[#07101b]/65" />
-            
+
             {/* =================================================
                 ORANGE BRAND LINE
             ================================================= */}
@@ -313,13 +335,7 @@ export default function Register() {
 
                 <div className="flex items-center gap-3">
 
-                  <div className="flex h-10 w-10 items-center justify-center bg-[#f47b20] text-black">
-
-                    <span className="por-mono text-sm font-black">
-                      P
-                    </span>
-
-                  </div>
+                  <BrandMark />
 
                   <div>
 
