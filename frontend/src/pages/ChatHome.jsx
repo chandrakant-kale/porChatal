@@ -289,38 +289,52 @@ export default function ChatHome({
   };
 
   const joinConnection = async (e) => {
-    const code = connectionCode;
+    e.preventDefault();
 
-    if (!code) {
-      setError("Please enter a connection code");
-      return false;
+    const code = connectionCode.trim().toUpperCase();
+
+    if (code.length !== 6) {
+      setError("Please enter a valid connection code.");
+      return;
     }
+
+    if (busy) return;
+
+    setBusy(true);
+    setError("");
 
     try {
-      e.preventDefault();
+      const response = await fetch(
+        "http://localhost:5000/connections/join",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ code }),
+          credentials: "include",
+        }
+      );
 
-      const responce = await fetch(`http://localhost:5000/connections/join`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ code }),
-        credentials: "include"
-      })
-      const data = await responce.json();
-      if (!responce.ok) {
-        throw new Error(data.message || "Failed to connect");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to connect.");
       }
-      console.log(data);
 
+      await getUserConnection();
+
+      setConnectionCode("");
+      setShowJoinForm(false);
+      setShowConnectionOptions(false);
       setError("");
-      return true;
-
     } catch (error) {
-      console.error("error occured : ", error);
-      setError(error.message || "failed to connect")
+      console.error("Error joining connection:", error);
+      setError(error.message || "Failed to connect.");
+    } finally {
+      setBusy(false);
     }
-  }
+  };
 
   const userLogout = async () => {
     try {
@@ -407,20 +421,23 @@ export default function ChatHome({
 
     setActiveId(chat.id);
     setError("");
-    setMobileSidebarOpen(false);
     setMessageText("");
+    setMobileSidebarOpen(false);
+
     if (socket?.connected) {
       socket.emit(
-        "conversation",
+        "conversation:join",
         { otherUserId: chat.id },
-        (responce) => {
-          if (!responce?.success) {
-            setError(responce?.message || "could not join the conversation")
+        (response) => {
+          if (!response?.success) {
+            setError(
+              response?.message || "Could not join the conversation."
+            );
           }
         }
-      )
+      );
     }
-    setMobileSidebarOpen(false);
+
     onSelectConversation?.(chat);
   }
 
@@ -449,6 +466,7 @@ export default function ChatHome({
     setConnectionCode("");
     setError("");
   }
+
 
   // COPY CODE
   async function handleCopyCode() {
@@ -783,7 +801,11 @@ export default function ChatHome({
                 ) : (
                   <div className="mt-auto space-y-5">
                     {activeMessages.map((message, index) => {
-                      const myId = currentUser?.id ?? currentUser?.userId;
+                      const myId =
+                        currentUser?.id ??
+                        currentUser?.userId ??
+                        user?.id ??
+                        user?.userId;
                       const senderId =
                         message.senderId ?? message.sender_id;
 
