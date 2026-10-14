@@ -41,19 +41,26 @@ app.use("/logout", logOutRouter);
 
 app.use("/connections", connectionRouter);
 
-io.on("connection", (socket) => {
-    console.log("socket connected : ", socket.id);
 
-    socket.on("connection:join", async (data, callback) => {
+io.on("connection", (socket) => {
+    console.log("Socket connected:", socket.id);
+    console.log("Authenticated user:", socket.userId);
+
+    // Join a conversation between two connected users.
+    socket.on("conversation:join", async (data, callback) => {
         try {
             const currentUserId = socket.userId;
             const otherUserId = data?.otherUserId;
 
-            if (!otherUserId || currentUserId === otherUserId) {
+            if (
+                !otherUserId ||
+                typeof otherUserId !== "string" ||
+                currentUserId === otherUserId
+            ) {
                 return callback?.({
                     success: false,
-                    message: "Invalid conversation"
-                })
+                    message: "Invalid conversation",
+                });
             }
 
             const [userA, userB] =
@@ -61,43 +68,60 @@ io.on("connection", (socket) => {
                     ? [currentUserId, otherUserId]
                     : [otherUserId, currentUserId];
 
-            const result = await pool.query(`
-                SELECT 1
-                FROM connections
-                WHERE user_a = $1 AND user_b = $2`, [userA, userB]);
+            const result = await pool.query(
+                `SELECT 1
+                 FROM connections
+                 WHERE user_a = $1 AND user_b = $2`,
+                [userA, userB]
+            );
 
             if (result.rowCount === 0) {
                 return callback?.({
                     success: false,
-                    message: "you are not connected to this user"
-                })
+                    message: "You are not connected to this user",
+                });
             }
+
             const room = `connection:${userA}:${userB}`;
+
             await socket.join(room);
+
+            return callback?.({
+                success: true,
+                message: "Conversation joined",
+            });
         } catch (error) {
-            console.error("join conversation error", error);
+            console.error("Join conversation error:", error);
 
             return callback?.({
                 success: false,
-                message: "Could not open conversation"
-            })
+                message: "Could not open conversation",
+            });
         }
-    })
+    });
 
-    // send an message
+    // Send messages without saving them to the database.
     socket.on("message:send", async (data, callback) => {
         try {
             const senderId = socket.userId;
             const recipientId = data?.recipientId;
 
-            const messageText = typeof data?.text === String ? data?.text.trim() : "";
+            const messageText =
+                typeof data?.text === "string"
+                    ? data.text.trim()
+                    : "";
 
-            if (!recipientId || recipientId === senderId
-                || !messageText || messageText.length > 5000) {
+            if (
+                !recipientId ||
+                typeof recipientId !== "string" ||
+                recipientId === senderId ||
+                !messageText ||
+                messageText.length > 5000
+            ) {
                 return callback?.({
                     success: false,
-                    message: "Invalid message"
-                })
+                    message: "Invalid message",
+                });
             }
 
             const [userA, userB] =
@@ -105,60 +129,67 @@ io.on("connection", (socket) => {
                     ? [senderId, recipientId]
                     : [recipientId, senderId];
 
-            const result = await pool.query(`
-                SELECT 1
-                FROM connections
-                WHERE user_a = $1 AND user_b = $2`, [userA, userB]);
+            // Confirm the users are still connected.
+            const result = await pool.query(
+                `SELECT 1
+                 FROM connections
+                 WHERE user_a = $1 AND user_b = $2`,
+                [userA, userB]
+            );
 
             if (result.rowCount === 0) {
                 return callback?.({
                     success: false,
-                    message: "You are not connected to this user"
-                })
+                    message: "You are not connected to this user",
+                });
             }
 
-            const room = `connections:${userA}:${userB}`;
+            const room = `connection:${userA}:${userB}`;
+
+            // The sender must join this conversation first.
             if (!socket.rooms.has(room)) {
                 return callback?.({
                     success: false,
-                    message: "Join the conversation before sending"
-                })
+                    message: "Join the conversation before sending",
+                });
             }
 
             const message = {
                 id: require("crypto").randomUUID(),
                 senderId,
-                text: message,
+                text: messageText,
                 createdAt: new Date().toISOString(),
             };
 
-            // deliver to the other reciver, not back to sender
-            socket.to(room).emit(("message:new"), {
+            // Deliver to the recipient, not back to the sender.
+            socket.to(room).emit("message:new", {
                 ...message,
                 conversationId: senderId,
-            })
+            });
 
+            // Acknowledge the message to the sender.
             return callback?.({
                 success: true,
                 message: {
                     ...message,
-                    conversationId: senderId
-                }
-            })
-
+                    conversationId: recipientId,
+                },
+            });
         } catch (error) {
-            console.log("message sending error", error);
+            console.error("Message sending error:", error);
 
             return callback?.({
                 success: false,
-                message: "failed to send message"
-            })
+                message: "Failed to send message",
+            });
         }
-    })
+    });
+
     socket.on("disconnect", () => {
         console.log("Socket disconnected:", socket.userId);
     });
-})
+});
+
 
 server.listen(5000, () => {
     console.log("server is running");
