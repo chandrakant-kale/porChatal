@@ -7,6 +7,7 @@ import ChatHome from "./pages/ChatHome";
 
 import { useEffect } from "react";
 import io from "socket.io-client";
+import Home from "./pages/Home";
 
 
 function App() {
@@ -66,7 +67,8 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Register />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/home/chat"
