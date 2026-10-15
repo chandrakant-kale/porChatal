@@ -211,18 +211,14 @@ export default function Login() {
         }
       `}</style>
 
-            {/* =====================================================
-          PAGE
-      ===================================================== */}
+            {/* PAGE  */}
 
             <main className="min-h-screen bg-[#07090d] text-white selection:bg-[#f47b20] selection:text-black lg:h-screen 
       lg:overflow-hidden">
 
                 <div className="grid min-h-screen lg:h-screen lg:grid-cols-[1.08fr_0.92fr]">
 
-                    {/* =================================================
-              LEFT SIDE — LEAF IMAGE
-          ================================================= */}
+                    {/* LEFT SIDE — LEAF IMAGE */}
 
                     <section
                         className="relative hidden overflow-hidden bg-[#05080d] lg:block"
@@ -235,20 +231,17 @@ export default function Login() {
 
                         {/* Dark overlay */}
 
-                        <div className="absolute inset-0 bg-black/25" />
+                        <div className="absolute inset-0 bg-black/55" />
 
                         {/* Text gradient */}
 
-                        <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/35 to-[#07101b]/65" />
+                        <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/65 to-[#07101b]/45" />
 
                         {/* Orange edge */}
 
-                        <div className="absolute left-0 top-0 h-full w-0.75 bg-[#f47b20]" />
+                        <div className="absolute left-0 top-0 h-full w-0.75 bg-[#B42335]" />
 
-
-                        {/* =================================================
-                CONTENT
-            ================================================= */}
+                        {/* CONTENT  */}
 
                         <div className="relative z-10 flex h-full flex-col px-10 py-8 xl:px-14">
 
@@ -258,12 +251,12 @@ export default function Login() {
 
                                 <div className="flex items-center gap-3">
 
-                                    <BrandMark/>
+                                    <BrandMark />
 
                                     <div>
 
                                         <p className="por-display text-[17px] font-extrabold tracking-[-0.04em]">
-                                            Por<span className="text-orange-500">Chat</span>al
+                                            Por<span className="text-[#B42335]">Chat</span>al
                                         </p>
 
                                         <p className="por-mono mt-0.5 text-[7px] uppercase tracking-[0.28em] text-white/35">
@@ -280,14 +273,11 @@ export default function Login() {
 
                             </div>
 
-
-                            {/* =================================================
-                  HERO
-              ================================================= */}
+                            {/* HERO  */}
 
                             <div className="my-auto max-w-162.5">
 
-                                <p className="por-mono mb-5 text-[9px] uppercase tracking-[0.32em] text-[#f47b20]">
+                                <p className="por-mono mb-5 text-[9px] uppercase tracking-[0.32em] text-[#B42335]">
                                     Welcome back
                                 </p>
 
@@ -308,7 +298,7 @@ export default function Login() {
 
                                 </h1>
 
-                                <div className="mt-7 h-px w-16 bg-[#f47b20]" />
+                                <div className="mt-7 h-px w-16 bg-[#B42335]" />
 
                                 <p className="por-display mt-6 max-w-120 text-[14px] leading-7 text-white/55">
 
@@ -326,10 +316,7 @@ export default function Login() {
 
                             </div>
 
-
-                            {/* =================================================
-                  BOTTOM MESSAGE
-              ================================================= */}
+                            {/* BOTTOM MESSAGE */}
 
                             <div className="flex items-end justify-between">
 
@@ -363,16 +350,11 @@ export default function Login() {
                     </section>
 
 
-                    {/* =================================================
-              RIGHT SIDE — LOGIN
-          ================================================= */}
-
+                    {/* RIGHT SIDE — LOGIN  */}
                     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0d1624] 
                     px-6 py-8 sm:px-10 lg:min-h-0 lg:px-12 xl:px-16">
 
-                        {/* =================================================
-                SUBTLE BACKGROUND
-            ================================================= */}
+                        {/* SUBTLE BACKGROUND */}
 
                         <div className="pointer-events-none absolute -right-45 -top-45 h-105 w-105 rounded-full border
                          border-white/2.5" />
@@ -384,24 +366,20 @@ export default function Login() {
                          border-[#f47b20]/20" />
 
 
-                        {/* =================================================
-                FORM CONTAINER
-            ================================================= */}
+                        {/* FORM CONTAINER */}
 
                         <div className="relative z-10 w-full max-w-102.5">
 
 
-                            {/* =================================================
-                  FORM HEADER
-              ================================================= */}
+                            {/* FORM HEADER  */}
 
                             <div className="mb-7">
 
                                 <div className="mb-3 flex items-center gap-2">
 
-                                    <span className="h-1.5 w-1.5 bg-[#f47b20]" />
+                                    <span className="h-1.5 w-1.5 bg-[#B42335]" />
 
-                                    <span className="por-mono text-[8px] uppercase tracking-[0.3em] text-[#f47b20]">
+                                    <span className="por-mono text-[8px] uppercase tracking-[0.3em] text-[#B42335]">
                                         Private access
                                     </span>
 
@@ -432,9 +410,7 @@ export default function Login() {
                             </div>
 
 
-                            {/* =================================================
-                  LOGIN FORM
-              ================================================= */}
+                            {/* LOGIN FORM */}
 
                             <form
                                 onSubmit={handleSubmit}
@@ -442,9 +418,7 @@ export default function Login() {
                             >
 
 
-                                {/* =================================================
-                    USERNAME
-                ================================================= */}
+                                {/* USERNAME  */}
 
                                 <div>
 
@@ -462,7 +436,7 @@ export default function Login() {
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         placeholder="your_username"
-                                        className="por-input h-13 w-full rounded-none border border-white/10 bg-[#09111d] px-4 
+                                        className="por-input h-13 w-full rounded-none border border-white/10 bg-[#050c15] px-4 
                                         font-mono text-xs text-white outline-none placeholder:text-white/15
                                          focus:border-[#f47b20]/60 focus:bg-[#050c15]"
                                     />
@@ -470,9 +444,7 @@ export default function Login() {
                                 </div>
 
 
-                                {/* =================================================
-                    PASSWORD
-                ================================================= */}
+                                {/* PASSWORD */}
 
                                 <div>
 
@@ -488,7 +460,7 @@ export default function Login() {
                                         <button
                                             type="button"
                                             className="por-mono text-[8px] uppercase tracking-[0.15em] text-white/25 transition 
-                                            hover:text-[#f47b20]"
+                                            hover:text-[#B42335]"
                                         >
                                             Forgot?
                                         </button>
@@ -505,9 +477,9 @@ export default function Login() {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="your password"
-                                            className="por-input h-13 w-full rounded-none border border-white/10 bg-[#09111d] px-4 pr-12
-                       font-mono text-xs text-white outline-none placeholder:text-white/15 focus:border-[#f47b20]/60
-                        focus:bg-[#050c15]"
+                                            className="por-input h-13 w-full rounded-none border border-white/10 bg-[#050c15] px-4 pr-12
+                                    font-mono text-xs text-white outline-none placeholder:text-white/15 focus:border-[#f47b20]/60
+                                     focus:bg-[#050c15]"
                                         />
 
 
@@ -517,7 +489,7 @@ export default function Login() {
                                                 setShowPassword(!showPassword)
                                             }
                                             className="absolute right-0 top-0 flex h-13 w-11 items-center justify-center text-white/25 transition 
-                      hover:text-[#f47b20]"
+                                          hover:text-[#f47b20]"
                                             aria-label={
                                                 showPassword
                                                     ? "Hide password"
@@ -534,9 +506,7 @@ export default function Login() {
                                 </div>
 
 
-                                {/* =================================================
-                    MESSAGE
-                ================================================= */}
+                                {/* MESSAGE */}
 
                                 {message.text && (
 
@@ -553,16 +523,13 @@ export default function Login() {
 
                                 )}
 
-
-                                {/* =================================================
-                    BUTTON
-                ================================================= */}
+                                {/* BUTTON  */}
 
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="group flex h-13.25 w-full items-center justify-between bg-[#f47b20] px-5 text-black
-                   transition-all duration-300 hover:bg-[#ff852f] hover:shadow-[0_12px_35px_rgba(244,123,32,0.12)]
+                                    className="group flex h-13.25 w-full items-center justify-between bg-[#B42335] px-5 text-white
+                   transition-all duration-300 hover:bg-[#c81e32] hover:shadow-[0_12px_35px_rgba(244,123,32,0.12)]
                     disabled:cursor-not-allowed disabled:opacity-60"
                                 >
 
@@ -581,10 +548,7 @@ export default function Login() {
 
                             </form>
 
-
-                            {/* =================================================
-                  REGISTER
-              ================================================= */}
+                            {/* REGISTER */}
 
                             <div className="mt-5 flex items-center justify-between border-t border-white/[0.07] pt-5">
 
@@ -594,18 +558,15 @@ export default function Login() {
 
                                 <Link
                                     to="/"
-                                    className="por-mono text-[9.5px] uppercase tracking-[0.18em] text-[#f47b20] transition
-                                     hover:text-[#ff9a4d]"
+                                    className="por-mono text-[9.5px] uppercase tracking-[0.18em] text-[#ba2536] transition
+                                     hover:text-[#e1001a]"
                                 >
                                     Create account →
                                 </Link>
 
                             </div>
 
-
-                            {/* =================================================
-                  PRIVACY NOTE
-              ================================================= */}
+                            {/* PRIVACY NOTE */}
 
                             <div className="mt-6 flex items-center gap-2.5 text-white/20">
 
