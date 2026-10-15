@@ -213,7 +213,7 @@ export default function Login() {
 
             {/* PAGE  */}
 
-            <main className="min-h-screen bg-[#07090d] text-white selection:bg-[#f47b20] selection:text-black lg:h-screen 
+            <main className="min-h-screen bg-[#05080d] text-[#B7ADA0] selection:bg-[#B42335] selection:text-black lg:h-screen 
       lg:overflow-hidden">
 
                 <div className="grid min-h-screen lg:h-screen lg:grid-cols-[1.08fr_0.92fr]">
@@ -438,7 +438,7 @@ export default function Login() {
                                         placeholder="your_username"
                                         className="por-input h-13 w-full rounded-none border border-white/10 bg-[#050c15] px-4 
                                         font-mono text-xs text-white outline-none placeholder:text-white/15
-                                         focus:border-[#f47b20]/60 focus:bg-[#050c15]"
+                                         focus:border-[#f47b20]/60 focus:bg-[#03070c]"
                                     />
 
                                 </div>
@@ -479,7 +479,7 @@ export default function Login() {
                                             placeholder="your password"
                                             className="por-input h-13 w-full rounded-none border border-white/10 bg-[#050c15] px-4 pr-12
                                     font-mono text-xs text-white outline-none placeholder:text-white/15 focus:border-[#f47b20]/60
-                                     focus:bg-[#050c15]"
+                                     focus:bg-[#03070c]"
                                         />
 
 
