@@ -333,7 +333,7 @@ export default function Home() {
             </span>
           </button>
 
-          <div className="hidden items-center gap-7 md:flex">
+          <div className="hidden items-center gap-11 md:flex">
             <button
               type="button"
               onClick={() => scrollToSection("about")}
