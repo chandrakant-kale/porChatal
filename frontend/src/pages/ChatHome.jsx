@@ -597,6 +597,7 @@ export default function ChatHome({
                 <p className="text-sm text-[#34332F]">
                   No conversations yet.
                 </p>
+                
                 <p className="mt-2 text-xs leading-5 text-[#625A51]">
                   Select Connect to start a conversation.
                 </p>
