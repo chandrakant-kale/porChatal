@@ -11,8 +11,6 @@ const socketAuth = (socket, next) => {
       .find((item) => item.startsWith("porChatal="))
       ?.slice("porChatal=".length);
 
-    console.log("Socket cookie present:", Boolean(token));
-
     if (!token) {
       return next(new Error("Authentication required"));
     }
@@ -23,8 +21,6 @@ const socketAuth = (socket, next) => {
     );
 
     socket.userId = verified.userId;
-
-    console.log("Socket authenticated:", socket.userId);
 
     return next();
   } catch (error) {
