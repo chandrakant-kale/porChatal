@@ -39,3 +39,6 @@ PorChatal is under development. End-to-end encryption is not yet implemented, an
 ---
 
 **PorChatal** — A quieter place to connect.
+
+### Author
+**Chandrakant** · [GitHub](https://github.com/chandrakant-kale)
