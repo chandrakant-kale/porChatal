@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 
@@ -158,6 +158,8 @@ export default function ChatHome({
   const [busy, setBusy] = useState(false);
 
   const navigate = useNavigate();
+
+  const messagesEndRef = useRef(null);
 
   // GET USER
   const getUser = async () => {
@@ -413,6 +415,13 @@ export default function ChatHome({
     [messages, activeChat]
   );
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [activeMessages, activeId]);
+
   function selectChat(chat) {
     if (!chat?.id) {
       setError("Invalid connection.");
@@ -597,7 +606,7 @@ export default function ChatHome({
                 <p className="text-sm text-[#34332F]">
                   No conversations yet.
                 </p>
-                
+
                 <p className="mt-2 text-xs leading-5 text-[#625A51]">
                   Select Connect to start a conversation.
                 </p>
@@ -814,10 +823,10 @@ export default function ChatHome({
                         myId != null &&
                         senderId != null &&
                         String(myId).toLowerCase() === String(senderId).toLowerCase();
-                      
+
                       return (
                         <div
-                         key={message.id}
+                          key={message.id}
                           className={`flex w-full ${mine ? "justify-end" : "justify-start"
                             }`}
                         >
@@ -846,6 +855,7 @@ export default function ChatHome({
                     })}
                   </div>
                 )}
+                <div ref={messagesEndRef} />
               </div>
             </section>
 
