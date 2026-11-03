@@ -8,6 +8,7 @@ import ChatHome from "./pages/ChatHome";
 import { useEffect } from "react";
 import io from "socket.io-client";
 import Home from "./pages/Home";
+import Profile from "./pages/Profile";
 
 
 function App() {
@@ -70,6 +71,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/home/chat/profile" element={<Profile />} />
         <Route
           path="/home/chat"
           element={

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 const C = {
@@ -655,7 +655,7 @@ export default function ChatHome({
           </div>
 
           {/* Account and logout */}
-          <div className="flex shrink-0 items-center gap-3 border-t border-[#9D9387] px-4 py-4">
+          <Link to="/home/chat/profile" className="flex shrink-0 items-center gap-3 border-t border-[#9D9387] px-4 py-4">
             <Avatar name={user.username || ""} small />
 
             <div className="min-w-0 flex-1">
@@ -677,7 +677,7 @@ export default function ChatHome({
             >
               <Icon name="logout" size={17} />
             </button>
-          </div>
+          </Link>
         </aside>
       )}
 

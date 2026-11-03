@@ -12,6 +12,8 @@ const chatLoginRouter = require("./routes/chatLoginRouter");
 const chatHomeAuthRouter = require("./routes/chatHomeAuthRouter");
 const logOutRouter = require("./routes/chatLogOutRouter");
 
+const deleteAccountRouter = require("./routes/deleteAccountRouter");
+
 const connectionRouter = require("./routes/connectionRoutes");
 
 const authSocket = require("./middlewares/socketAuthMiddleware");
@@ -40,6 +42,7 @@ app.use("/home", chatHomeAuthRouter);
 app.use("/logout", logOutRouter);
 
 app.use("/connections", connectionRouter);
+app.use("/delete", deleteAccountRouter);
 
 
 io.on("connection", (socket) => {
