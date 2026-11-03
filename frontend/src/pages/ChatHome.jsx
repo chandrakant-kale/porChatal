@@ -159,7 +159,9 @@ export default function ChatHome({
 
   const navigate = useNavigate();
 
+  const messagesContainerRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const shouldAutoScroll = useRef(true);
 
   // GET USER
   const getUser = async () => {
@@ -415,7 +417,22 @@ export default function ChatHome({
     [messages, activeChat]
   );
 
+  const handleMessagesScroll = () => {
+    const container = messagesContainerRef.current;
+
+    if (!container) return;
+
+    const distanceFromBottom =
+      container.scrollHeight -
+      container.scrollTop -
+      container.clientHeight;
+
+    shouldAutoScroll.current = distanceFromBottom < 120;
+  };
+
   useEffect(() => {
+    if (!shouldAutoScroll.current) return;
+
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "end",
@@ -428,6 +445,7 @@ export default function ChatHome({
       return;
     }
 
+    shouldAutoScroll.current = true;
     setActiveId(chat.id);
     setError("");
     setMessageText("");
@@ -489,34 +507,36 @@ export default function ChatHome({
 
 
   // SEND MESSAGE
-  async function handleSend(event) {
-    event.preventDefault();
+ async function handleSend(event) {
+  event.preventDefault();
 
-    const text = messageText.trim();
+  const text = messageText.trim();
 
-    if (!text || !activeChat || busy) return;
+  if (!text || !activeChat || busy) return;
 
-    if (!onSendMessage) {
-      setError("Message sending is not configured.");
-      return;
-    }
-
-    setError("");
-    setBusy(true);
-
-    try {
-      await onSendMessage({
-        conversationId: activeChat.id,
-        text: messageText.trim(),
-      });
-
-      setMessageText("");
-    } catch (err) {
-      setError(err.message || "Unable to send the message.");
-    } finally {
-      setBusy(false);
-    }
+  if (!onSendMessage) {
+    setError("Message sending is not configured.");
+    return;
   }
+
+  setError("");
+  setBusy(true);
+
+  try {
+    shouldAutoScroll.current = true;
+
+    await onSendMessage({
+      conversationId: activeChat.id,
+      text,
+    });
+
+    setMessageText("");
+  } catch (err) {
+    setError(err.message || "Unable to send the message.");
+  } finally {
+    setBusy(false);
+  }
+}
 
 
   function toggleSidebar() {
@@ -790,6 +810,8 @@ export default function ChatHome({
           <>
             {/* Messages */}
             <section
+              ref={messagesContainerRef}
+              onScroll={handleMessagesScroll}
               aria-label="Conversation messages"
               className="flex min-h-0 flex-1 flex-col overflow-y-auto"
             >
