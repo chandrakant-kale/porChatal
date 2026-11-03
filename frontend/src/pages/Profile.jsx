@@ -13,7 +13,8 @@ function Avatar({ name = "" }) {
       .join("") || "?";
 
   return (
-    <div className="h-16 w-16 shrink-0 rounded-full border-2 border-[#B42335] bg-[#080424] flex items-center justify-center text-xl font-bold text-white">
+    <div className="h-16 w-16 shrink-0 rounded-full border-2 border-[#B42335] bg-[#080424] flex items-center 
+    justify-center text-xl font-bold text-white">
       {initials}
     </div>
   );
@@ -201,7 +202,8 @@ function Profile() {
                   setError("");
                   setConfirmation("logout");
                 }}
-                className="w-full border border-[#344155] py-3.5 text-sm transition hover:border-[#B42335] hover:bg-[#18263A]"
+                className="w-full border border-[#344155] py-3.5 text-sm transition hover:border-[#B42335] 
+                hover:bg-[#18263A]"
               >
                 Logout
               </button>
@@ -211,7 +213,8 @@ function Profile() {
                   setError("");
                   setConfirmation("delete");
                 }}
-                className="w-full border border-[#B42335] py-3.5 text-sm text-[#D45B69] transition hover:bg-[#B42335] hover:text-white"
+                className="w-full border border-[#B42335] py-3.5 text-sm text-[#D45B69] transition hover:bg-[#B42335]
+                 hover:text-white"
               >
                 Delete account
               </button>
