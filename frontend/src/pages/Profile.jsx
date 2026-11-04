@@ -1,7 +1,8 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import background from "../assets/Midnight Blue and Crimson Botanical Vignette.png";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Avatar({ name = "" }) {
   const initials =
@@ -47,7 +48,7 @@ function Profile() {
 
   const getUser = async () => {
     try {
-      const response = await fetch("http://localhost:5000/home", {
+      const response = await fetch(`${API_URL}/home`, {
         credentials: "include",
       });
 
@@ -67,7 +68,7 @@ function Profile() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:5000/logout", {
+      const response = await fetch(`${API_URL}/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -91,7 +92,7 @@ function Profile() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:5000/delete", {
+      const response = await fetch(`${API_URL}/delete`, {
         method: "POST",
         credentials: "include",
       });

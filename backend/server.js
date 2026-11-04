@@ -21,16 +21,19 @@ const authSocket = require("./middlewares/socketAuthMiddleware");
 const app = express();
 const server = http.createServer(app);
 
+const PORT = process.env.PORT || 5000;
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: CLIENT_URL,
         credentials: true,
     },
 })
 io.use(authSocket);
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: CLIENT_URL,
     credentials: true,
 }));
 app.use(express.json());
@@ -194,8 +197,7 @@ io.on("connection", (socket) => {
 });
 
 
-server.listen(5000, () => {
-    console.log("server is running");
-    console.log("http://localhost:5000");
+server.listen(PORT, "0.0.0.0", () => {
+    console.log(`server is running on port ${PORT}`);
 
 })

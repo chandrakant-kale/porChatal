@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import MidnightBlueLeaves from "../assets/Midnight Blue and Crimson Botanical Vignette.png";
 import { Link, useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 /* =========================================================
    ICONS

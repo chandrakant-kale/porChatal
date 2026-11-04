@@ -10,6 +10,7 @@ import io from "socket.io-client";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 
+const API_URL = import.meta.env.VITE_API_URL
 
 function App() {
 
@@ -17,7 +18,7 @@ function App() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:5000", {
+    const newSocket = io(`${API_URL}`, {
       withCredentials: true
     });
 

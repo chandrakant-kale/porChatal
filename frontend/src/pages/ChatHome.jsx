@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 const C = {
   navy: "#05080d",
@@ -166,7 +167,7 @@ export default function ChatHome({
   // GET USER
   const getUser = async () => {
     try {
-      const response = await fetch("http://localhost:5000/home", {
+      const response = await fetch(`${API_URL}/home`, {
         credentials: "include",
       });
 
@@ -184,7 +185,7 @@ export default function ChatHome({
   // GET CONNECTIONS
   const getUserConnection = async () => {
     try {
-      const response = await fetch("http://localhost:5000/connections", {
+      const response = await fetch(`${API_URL}/connections`, {
         credentials: "include",
       });
 
@@ -219,7 +220,7 @@ export default function ChatHome({
     setError("");
     setBusy(true);
     try {
-      const response = await fetch("http://localhost:5000/connections/code", {
+      const response = await fetch(`${API_URL}/connections/code`, {
         method: "POST",
         credentials: "include"
       });
@@ -259,7 +260,7 @@ export default function ChatHome({
 
     try {
       const response = await fetch(
-        `http://localhost:5000/connections/${otherUserId}`,
+        `${API_URL}/connections/${otherUserId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -309,7 +310,7 @@ export default function ChatHome({
 
     try {
       const response = await fetch(
-        "http://localhost:5000/connections/join",
+        `${API_URL}/connections/join`,
         {
           method: "POST",
           headers: {
@@ -342,7 +343,7 @@ export default function ChatHome({
 
   const userLogout = async () => {
     try {
-      const responce = await fetch("http://localhost:5000/logout", {
+      const responce = await fetch(`${API_URL}/logout`, {
         method: "POST",
         credentials: "include"
       })

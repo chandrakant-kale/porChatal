@@ -50,12 +50,14 @@ const chatRegister = async (req, res) => {
             { expiresIn: "12h" }
         )
 
+        const isProduction = process.env.NODE_ENV === "production";
+
         res.cookie("porChatal", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
-            maxAge: 12 * 60 * 60 * 1000
-        })
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            maxAge: 12 * 60 * 60 * 1000,
+        });
 
         return res.status(201).json({
             success: true,
