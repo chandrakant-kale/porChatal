@@ -8,7 +8,7 @@ const createConnectionCode = async (req, res) => {
         const userId = req.chat;
         const code = crypto.randomBytes(4).toString("hex").toUpperCase().slice(0, 6);
 
-        codeHash = crypto.createHash("sha256").update(code).digest("hex");
+        const codeHash = crypto.createHash("sha256").update(code).digest("hex");
 
         const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
 
@@ -55,7 +55,7 @@ const joinConnection = async (req, res) => {
 
         const cleanCode = code.trim().toUpperCase();
 
-        if (cleanCode.length != 6) {
+        if (!/^[A-F0-9]{6}$/.test(cleanCode)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid connection code"
