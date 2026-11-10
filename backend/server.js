@@ -121,11 +121,16 @@ const getConversationRoom = (userA, userB) => {
 
 // Verify that two users are connected
 const areUsersConnected = async (userA, userB) => {
+  const [firstUser, secondUser] =
+    userA < userB
+      ? [userA, userB]
+      : [userB, userA];
+
   const result = await pool.query(
     `SELECT 1
      FROM connections
      WHERE user_a = $1 AND user_b = $2`,
-    [userA, userB]
+    [firstUser, secondUser]
   );
 
   return result.rowCount > 0;
