@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import io from "socket.io-client";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -73,6 +74,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/home/chat/profile" element={<Profile />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route
           path="/home/chat"
           element={

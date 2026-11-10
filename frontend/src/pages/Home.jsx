@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MidnightBlueLeaves from "../assets/Midnight Blue and Crimson Botanical Vignette.png";
 
 const C = {
@@ -334,41 +334,44 @@ export default function Home() {
           </button>
 
           <div className="hidden items-center gap-11 md:flex">
-            <button
+            <Link
+            to="/"
               type="button"
               onClick={() => scrollToSection("about")}
               className="por-nav-button text-xs text-[#B7ADA0] transition-colors hover:text-white"
             >
               About
-            </button>
-            <button
+            </Link>
+            <Link
+            to="/"
               type="button"
               onClick={() => scrollToSection("features")}
               className="por-nav-button text-xs text-[#B7ADA0] transition-colors hover:text-white"
             >
               Features
-            </button>
-            <button
+            </Link>
+            <Link
+              to="/"
               type="button"
               onClick={() => scrollToSection("how-it-works")}
               className="por-nav-button text-xs text-[#B7ADA0] transition-colors hover:text-white"
             >
               How it works
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollToSection("privacy")}
+            </Link>
+            <Link
+              to="/privacy-policy"
               className="por-nav-button text-xs text-[#B7ADA0] transition-colors hover:text-white"
             >
-              Privacy
-            </button>
-            <button
+              Privacy Policy
+            </Link>
+            <Link
+            to="/"
               type="button"
               onClick={() => scrollToSection("faq")}
               className="por-nav-button text-xs text-[#B7ADA0] transition-colors hover:text-white"
             >
               FAQ
-            </button>
+            </Link>
           </div>
 
           <div className="flex shrink-0 items-center gap-3 sm:gap-5">
