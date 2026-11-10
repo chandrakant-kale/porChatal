@@ -21,6 +21,9 @@ const connectionRouter = require("./routes/connectionRoutes");
 const authSocket = require("./middlewares/socketAuthMiddleware");
 const loginLimiter = require("./middlewares/loginLimiter");
 
+const csrfRouter = require("./routes/csrfRoutes");
+const { csrfProtection } = require("./middlewares/csrfMiddleware");
+
 const app = express();
 const server = http.createServer(app);
 
@@ -65,16 +68,18 @@ app.get("/health", (req, res) => {
 });
 
 // Routes
+app.use("/csrf-token", csrfRouter);
+
 app.use("/register", chatRegisterRouter);
 
 app.use("/login", loginLimiter);
 app.use("/login", chatLoginRouter);
 
 app.use("/home", chatHomeAuthRouter);
-app.use("/logout", logOutRouter);
+app.use("/logout", csrfProtection, logOutRouter);
 
 app.use("/connections", connectionRouter);
-app.use("/delete", deleteAccountRouter);
+app.use("/delete", csrfProtection, deleteAccountRouter);
 
 // Socket.IO configuration
 const io = new Server(server, {
